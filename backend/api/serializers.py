@@ -41,6 +41,12 @@ class SignUpSerializer(ModelSerializer):
         return instance
 
 
+class LoginSerializer(ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ['username', 'password']
+
+
 class UserSerializer(ModelSerializer):
     class Meta:
         model = models.User
