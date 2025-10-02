@@ -66,8 +66,9 @@ class Movie(models.Model):
     release_date = models.DateField(verbose_name='Дата выхода', blank=True, null=True)
     description = models.TextField(verbose_name='Описание', blank=True, null=True)
     rate = models.FloatField(verbose_name='Оценка', blank=True, default=0)
-    genres = models.ManyToManyField('Genre', verbose_name='Жанры', related_name='movies')
-    countries = models.ManyToManyField('Country', verbose_name='Страны', related_name='movies', blank=True, null=True)
+    # rates = models.ManyToManyField('Rate', through='Rating', verbose_name='Оценки', related_name='movies', blank=True)
+    genres = models.ManyToManyField('Genre', verbose_name='Жанры', related_name='movies', blank=True)
+    countries = models.ManyToManyField('Country', verbose_name='Страны', related_name='movies', blank=True)
     poster = models.ImageField(
         upload_to='images/posters/',  # Папка для загрузки
         blank=True,  # Необязательное поле
@@ -133,6 +134,15 @@ class Person(models.Model):
         return reverse('api:person', args=[self.pk])
 
 
+class ActorManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(name=Profession.Type.ACTOR)
+
+
+class DirectorManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(name=Profession.Type.DIRECTOR)
+
 class Profession(models.Model):
 
     class Type(models.TextChoices):
@@ -144,6 +154,10 @@ class Profession(models.Model):
     person = models.ForeignKey(
         'Person', on_delete=models.PROTECT, verbose_name='Личность', related_name='professions'
     )
+
+    objects = models.Manager()
+    actors = ActorManager()
+    directors = DirectorManager()
 
     def __str__(self):
         return f'person={self.person}, movie={self.movie}, name={self.name}'
@@ -176,6 +190,8 @@ class Rating(models.Model):
     rate = models.FloatField(verbose_name='Оценка', choices=Rate.choices, default=Rate.R1)
     date = models.DateTimeField(default=timezone.now, verbose_name='Дата')
     is_watched = models.BooleanField(default=True, verbose_name='Просмотрено')
+
+    objects = models.Manager()
 
     def __str__(self):
         return f'user={self.user}, movie={self.movie}, rate={self.rate}, date={self.date}'
