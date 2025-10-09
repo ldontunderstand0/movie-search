@@ -122,6 +122,8 @@ class Person(models.Model):
         'Movie', verbose_name='Фильмы', related_name='movies', through='Profession', blank=True
     )
 
+    objects = models.Manager()
+
     def __str__(self):
         return f'{self.full_name}, {self.birth_date}'
 
@@ -188,18 +190,19 @@ class Rating(models.Model):
     movie = models.ForeignKey('Movie', on_delete=models.PROTECT, verbose_name='Кино', related_name='ratings')
     user = models.ForeignKey('User', on_delete=models.PROTECT, verbose_name='Пользователь', related_name='ratings')
     rate = models.FloatField(verbose_name='Оценка', choices=Rate.choices, default=Rate.R1)
-    date = models.DateTimeField(default=timezone.now, verbose_name='Дата')
     is_watched = models.BooleanField(default=True, verbose_name='Просмотрено')
+    created_at = models.DateTimeField(auto_now_add=timezone.now, verbose_name='Дата создания')
+    updated_at = models.DateTimeField(auto_now=timezone.now, verbose_name='Дата изменения')
 
     objects = models.Manager()
 
     def __str__(self):
-        return f'user={self.user}, movie={self.movie}, rate={self.rate}, date={self.date}'
+        return f'user={self.user}, movie={self.movie}, rate={self.rate}'
 
     class Meta:
         verbose_name = "Оценка"
         verbose_name_plural = "Оценки"
-        ordering = ['-date']
+        ordering = ['-created_at']
 
     def get_absolute_url(self):
         return reverse('api:rating', args=[self.pk])

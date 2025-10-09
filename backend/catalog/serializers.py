@@ -7,7 +7,8 @@ from rest_framework.serializers import (
     ValidationError,
     SerializerMethodField,
 )
-from . import models
+from utils.serializers import BaseModelSerializer
+from catalog import models
 
 
 class SignUpSerializer(ModelSerializer):
@@ -56,16 +57,40 @@ class UserSerializer(ModelSerializer): # testing
         fields = ['id', 'username', 'email', 'password']
 
 
+class PersonSerializer(BaseModelSerializer):
+    class Meta:
+        model = models.Person
+        exclude = ['biography']
+
+
+class ProfessionSerializer(BaseModelSerializer):
+    class Meta:
+        model = models.Profession
+        exclude = []
+
+
 class GenreSerializer(ModelSerializer):
     class Meta:
         model = models.Genre
-        fields = ['id', 'name']
+        exclude = []
 
 
 class CountrySerializer(ModelSerializer):
     class Meta:
         model = models.Country
-        fields = ['id', 'name']
+        exclude = []
+
+
+class RatingSerializer(BaseModelSerializer):
+    class Meta:
+        model = models.Rating
+        exclude = []
+
+
+class ReviewSerializer(ModelSerializer):
+    class Meta:
+        model = models.Review
+        exclude = []
 
 
 class MovieSerializer(ModelSerializer):
@@ -99,7 +124,10 @@ class MovieInfoSerializer(MovieSerializer):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             rating = models.Rating.objects.filter(movie=obj, user=request.user).first()
-            return MovieRatingSerializer(rating).data if rating else None
+            return RatingSerializer(
+                rating,
+                exclude_fields=['movie', 'user', 'created_at', 'updated_at']
+            ).data if rating else None
         return None
 
 
@@ -121,6 +149,7 @@ class MovieListSerializer(MovieInfoSerializer):
 
 
 class MovieDetailSerializer(MovieInfoSerializer):
+
     genres = GenreSerializer(many=True, read_only=True)
     countries = CountrySerializer(many=True, read_only=True)
     rates_count = SerializerMethodField()
@@ -137,41 +166,17 @@ class MovieDetailSerializer(MovieInfoSerializer):
     @staticmethod
     def get_actors(obj):
         actors = models.Profession.actors.filter(movie=obj).select_related('person')
-        return MoviePersonSerializer([actor.person for actor in actors], many=True).data
+        return PersonSerializer(
+            [actor.person for actor in actors],
+            many=True,
+            exclude_fields=['birth_date', 'sex', 'movies']
+        ).data
 
     @staticmethod
     def get_directors(obj):
         directors = models.Profession.directors.filter(movie=obj)
-        return MoviePersonSerializer([director.person for director in directors], many=True).data
-
-
-class PersonSerializer(ModelSerializer):
-    class Meta:
-        model = models.Person
-        exclude = []
-
-
-class MoviePersonSerializer(PersonSerializer):
-    class Meta(PersonSerializer.Meta):
-        exclude = PersonSerializer.Meta.exclude + ['birth_date', 'sex', 'movies']
-
-
-class RatingSerializer(ModelSerializer):
-    class Meta:
-        model = models.Rating
-        fields = ['id', 'movie', 'user', 'rate', 'date', 'is_watched']
-
-
-class MovieRatingSerializer(RatingSerializer):
-    class Meta(RatingSerializer.Meta):
-        extra_kwargs = {
-            'movie': {'write_only': True},
-            'user': {'write_only': True},
-            'date': {'write_only': True},
-        }
-
-
-class ReviewSerializer(ModelSerializer):
-    class Meta:
-        model = models.Review
-        exclude = []
+        return PersonSerializer(
+            [director.person for director in directors],
+            many=True,
+            exclude_fields=['birth_date', 'sex', 'movies'],
+        ).data

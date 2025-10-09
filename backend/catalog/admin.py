@@ -17,7 +17,7 @@ class RatingInline(admin.StackedInline):
     can_delete = False
     verbose_name = 'Оценка'
     verbose_name_plural = 'Оценка'
-    fields = ['rate', 'date', 'movie', 'user']
+    fields = ['rate', 'movie', 'user', 'created_at', 'updated_at']
 
 
 class ReviewInline(admin.StackedInline):
@@ -26,7 +26,7 @@ class ReviewInline(admin.StackedInline):
     can_delete = False
     verbose_name = 'Рецензия'
     verbose_name_plural = 'Рецензия'
-    fields = ['title', 'text', 'date', 'movie', 'user']
+    fields = ['title', 'text', 'movie', 'user', 'created_at', 'updated_at']
 
 
 @admin.register(models.User)
@@ -119,9 +119,9 @@ class ProfessionAdmin(admin.ModelAdmin):
 
 @admin.register(models.Rating)
 class RatingAdmin(admin.ModelAdmin):
-    list_display = ['rate', 'date', 'movie', 'user']
-    list_filter = ['rate', 'date', 'movie', 'user']
-    date_hierarchy = 'date'
+    list_display = ['rate', 'movie', 'user', 'created_at', 'updated_at']
+    list_filter = ['rate', 'movie', 'user']
+    date_hierarchy = 'created_at'
     list_display_links = ['rate']
     raw_id_fields = ['movie', 'user']
 
