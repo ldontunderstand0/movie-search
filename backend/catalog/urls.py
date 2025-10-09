@@ -5,35 +5,20 @@ from catalog import views
 app_name = 'catalog'
 
 router = SimpleRouter()
+router.register(r'user', views.UserViewSet)
+router.register(r'movie', views.MovieViewSet)
 router.register(r'person', views.PersonViewSet)
 router.register(r'profession', views.ProfessionViewSet)
+router.register(r'genre', views.GenreViewSet)
+router.register(r'country', views.CountryViewSet)
+router.register(r'review', views.ReviewViewSet)
+router.register(r'rating', views.RatingViewSet)
 
 urlpatterns = [
     path('signup/', views.SignUpView.as_view()),
     path('login/', views.LoginView.as_view()),
     path('logout/', views.LogoutView.as_view()),
-
-    path('user/', views.UserListView.as_view()), # testing
-    path('user/<int:pk>/', views.UserDetailView.as_view()),  # need view
-
-    path('movie/', views.MovieListView.as_view()),
-    path('movie/<int:pk>/', views.MovieDetailView.as_view()),
-
-    path('review/', views.ReviewListView.as_view()),
-    path('review/<int:pk>/', views.ReviewDetailView.as_view()),
-
-    path('rating/', views.RatingListView.as_view()),
-    path('rating/<int:pk>/', views.RatingDetailView.as_view()),
-
-    # path('person/', views.PersonListView.as_view()),
-    # path('person/<int:pk>/', views.PersonDetailView.as_view()),
-
-    # path('profession/', views.ProfessionListView.as_view()),
-    # path('profession/<int:pk>/', views.ProfessionDetailView.as_view()),
-
-    path('genre/', views.GenreListView.as_view()),
-    path('genre/<int:pk>/', views.GenreDetailView.as_view()),
-
-    path('country/', views.CountryListView.as_view()),
-    path('country/<int:pk>/', views.CountryDetailView.as_view()),
 ] + router.urls
+# сортировка по рейтингу фильмов, сортировка по новым полям пользователя, персоны
+# баг permissions
+# баг регистрации

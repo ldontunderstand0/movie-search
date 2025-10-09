@@ -7,6 +7,7 @@ from rest_framework.serializers import (
     ValidationError,
     SerializerMethodField,
 )
+
 from utils.serializers import BaseModelSerializer
 from catalog import models
 
@@ -15,6 +16,7 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = models.User
         fields = ['id', 'username', 'email', 'password']
+        extra_kwargs = {'password': {'write_only': True}}
 
 
 class SignUpSerializer(UserSerializer):
@@ -31,7 +33,6 @@ class SignUpSerializer(UserSerializer):
 
     class Meta(UserSerializer.Meta):
         fields = UserSerializer.Meta.fields + ['password1', 'password2']
-        extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, attrs):
         if attrs['password1'] != attrs['password2']:
@@ -55,6 +56,30 @@ class LoginSerializer(UserSerializer):
         fields = ['username', 'password']
 
 
+class UserListSerializer(UserSerializer):
+    watches = SerializerMethodField()
+    rates = SerializerMethodField()
+    reviews = SerializerMethodField()
+
+    class Meta(UserSerializer.Meta):
+        fields = ['id', 'username', 'watches', 'rates', 'reviews']
+
+    @staticmethod
+    def get_watches(obj):
+        watches = models.Rating.objects.filter(user=obj, is_watched=True)
+        return watches.count()
+
+    @staticmethod
+    def get_rates(obj):
+        rates = models.Rating.objects.filter(user=obj, rate__isnull=False)
+        return rates.count()
+
+    @staticmethod
+    def get_reviews(obj):
+        reviews = models.Review.objects.filter(user=obj)
+        return reviews.count()
+
+
 class PersonSerializer(BaseModelSerializer):
     class Meta:
         model = models.Person
@@ -70,13 +95,31 @@ class ProfessionSerializer(BaseModelSerializer):
 class GenreSerializer(ModelSerializer):
     class Meta:
         model = models.Genre
-        exclude = []
+        fields = '__all__'
+
+
+class GenreListSerializer(GenreSerializer):
+    movies_count = SerializerMethodField()
+
+    @staticmethod
+    def get_movies_count(obj):
+        movies = models.Movie.objects.filter(genres=obj)
+        return movies.count()
 
 
 class CountrySerializer(ModelSerializer):
     class Meta:
         model = models.Country
         exclude = []
+
+
+class CountryListSerializer(CountrySerializer):
+    movies_count = SerializerMethodField()
+
+    @staticmethod
+    def get_movies_count(obj):
+        movies = models.Movie.objects.filter(countries=obj)
+        return movies.count()
 
 
 class RatingSerializer(BaseModelSerializer):
@@ -91,7 +134,7 @@ class ReviewSerializer(ModelSerializer):
         exclude = []
 
 
-class MovieSerializer(ModelSerializer):
+class MovieSerializer(BaseModelSerializer):
     class Meta:
         model = models.Movie
         fields = ['id', 'type', 'title', 'release_date', 'description', 'genres', 'countries', 'poster']
@@ -178,3 +221,22 @@ class MovieDetailSerializer(MovieInfoSerializer):
             many=True,
             exclude_fields=['birth_date', 'sex', 'movies'],
         ).data
+
+
+class ProfessionDetailSerializer(ProfessionSerializer):
+    movie = MovieListSerializer(read_only=True, exclude_fields=['user_actions'])
+
+
+class PersonListSerializer(PersonSerializer):
+    class Meta(PersonSerializer.Meta):
+        exclude = PersonSerializer.Meta.exclude + ['movies']
+
+
+class PersonDetailSerializer(PersonSerializer):
+    professions = ProfessionDetailSerializer(many=True, read_only=True, exclude_fields=['id', 'person'])
+    movies_count = SerializerMethodField()
+
+    @staticmethod
+    def get_movies_count(obj):
+        movies = models.Profession.objects.filter(person=obj)
+        return movies.count()

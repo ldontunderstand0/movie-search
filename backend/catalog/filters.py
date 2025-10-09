@@ -3,6 +3,22 @@ from django_filters import rest_framework as filters
 from catalog import models
 
 
+class UserFilter(filters.FilterSet):
+
+    search = filters.CharFilter(method='filter_by_search')
+
+    @staticmethod
+    def filter_by_search(queryset, name, value):
+        if value:
+            return queryset.filter(username__iregex=value)
+        return queryset
+
+    class Meta:
+        model = models.User
+        fields = ['search']
+
+
+
 class MovieFilter(filters.FilterSet):
 
     search = filters.CharFilter(method='filter_by_search')
@@ -45,6 +61,21 @@ class MovieFilter(filters.FilterSet):
     class Meta:
         model = models.Movie
         fields = ['search', 'type', 'year', 'genre', 'country', 'sort']
+
+
+class PersonFilter(filters.FilterSet):
+
+    search = filters.CharFilter(method='filter_by_search')
+
+    @staticmethod
+    def filter_by_search(queryset, name, value):
+        if value:
+            return queryset.filter(full_name__iregex=value)
+        return queryset
+
+    class Meta:
+        model = models.Person
+        fields = ['search']
 
 
 class ReviewFilter(filters.FilterSet):

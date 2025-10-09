@@ -4,9 +4,8 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import CreateAPIView, ListAPIView, GenericAPIView, ListCreateAPIView, \
-    RetrieveUpdateDestroyAPIView
-from catalog import models, serializers, filters, permissions, pagination
+from rest_framework.generics import CreateAPIView
+from catalog import models, serializers, filters, permissions
 
 
 class SignUpView(CreateAPIView):
@@ -29,13 +28,11 @@ class LoginView(APIView):
             raise AuthenticationFailed('Incorrect password.')
         login(request, user)
 
-        return Response({
-            "success": "User logged in.",
-        })
+        return Response({"success": "User logged in.",})
 
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticated]
 
     @staticmethod
     def post(request):
@@ -43,81 +40,64 @@ class LogoutView(APIView):
         return Response({"success": "User logged out."})
 
 
-class UserListView(ListCreateAPIView): # need to custom
-    permission_classes = [permissions.IsAdminUserOrReadOnly]
-    serializer_class = serializers.UserSerializer
+class UserViewSet(ModelViewSet):
     queryset = models.User.objects.all()
-    # filterset_class = filters.UserFilter
-    pagination_class = pagination.APIListPagination
-
-
-class UserDetailView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsUserOrAdminOrReadOnly]
     serializer_class = serializers.UserSerializer
-    queryset = models.User.objects.all()
+    filterset_class = filters.UserFilter
+
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'destroy']:
+            return [permissions.IsUserOrAdminOrReadOnly()]
+        return [permissions.IsAdminUserOrReadOnly()]
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializers.UserListSerializer
+        return serializers.UserSerializer
 
 
-class MovieListView(ListCreateAPIView):
+class MovieViewSet(ModelViewSet):
     permission_classes = [permissions.IsAdminUserOrReadOnly]
-    serializer_class = serializers.MovieListSerializer
-    queryset = models.Movie.objects.all()
-    filterset_class = filters.MovieFilter
-    pagination_class = pagination.APIListPagination
-
-
-class MovieDetailView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAdminUserOrReadOnly]
-    serializer_class = serializers.MovieDetailSerializer
     queryset = models.Movie.objects.prefetch_related('genres', 'countries').all()
+    filterset_class = filters.MovieFilter
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializers.MovieListSerializer
+        return serializers.MovieDetailSerializer
 
 
-class ReviewListView(ListCreateAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    serializer_class = serializers.ReviewSerializer
+class ReviewViewSet(ModelViewSet):
     queryset = models.Review.objects.select_related('user', 'movie').all()
+    serializer_class = serializers.ReviewSerializer
     filterset_class = filters.ReviewFilter
-    pagination_class = pagination.APIListPagination
+
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'destroy']:
+            return [permissions.IsCreatorOrAdminOrReadOnly()]
+        return [IsAuthenticatedOrReadOnly()]
 
 
-class ReviewDetailView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsCreatorOrAdminOrReadOnly]
-    serializer_class = serializers.ReviewSerializer
-    queryset = models.Review.objects.select_related('user', 'movie').all()
-
-
-class RatingListView(ListCreateAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    serializer_class = serializers.RatingSerializer
+class RatingViewSet(ModelViewSet):
     queryset = models.Rating.objects.select_related('user', 'movie').all()
+    serializer_class = serializers.RatingSerializer
     filterset_class = filters.RatingFilter
-    pagination_class = pagination.APIListPagination
 
+    def get_permissions(self):
+        if self.action in ['update', 'partial_update', 'destroy']:
+            return [permissions.IsCreatorOrAdminOrReadOnly()]
+        return [IsAuthenticatedOrReadOnly()]
 
-class RatingDetailView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsCreatorOrAdminOrReadOnly]
-    serializer_class = serializers.RatingSerializer
-    queryset = models.Rating.objects.select_related('user', 'movie').all()
-
-
-# class PersonListView(ListCreateAPIView): # need to custom
-#     permission_classes = [permissions.IsAdminUserOrReadOnly]
-#     serializer_class = serializers.PersonSerializer
-#     queryset = models.Person.objects.prefetch_related('movies').all()
-#     # filterset_class = filters.PersonFilter
-#     pagination_class = pagination.APIListPagination
-#
-#
-# class PersonDetailView(RetrieveUpdateDestroyAPIView): # need to custom
-#     permission_classes = [permissions.IsAdminUserOrReadOnly]
-#     serializer_class = serializers.PersonSerializer
-#     queryset = models.Person.objects.prefetch_related('movies').all()
 
 class PersonViewSet(ModelViewSet):
     permission_classes = [permissions.IsAdminUserOrReadOnly]
-    serializer_class = serializers.PersonSerializer
     queryset = models.Person.objects.prefetch_related('movies').all()
-    # filterset_class = filters.PersonFilter
-    pagination_class = pagination.APIListPagination
+    filterset_class = filters.PersonFilter
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return serializers.PersonDetailSerializer
+        return serializers.PersonListSerializer
 
 
 class ProfessionViewSet(ModelViewSet):
@@ -125,32 +105,25 @@ class ProfessionViewSet(ModelViewSet):
     serializer_class = serializers.ProfessionSerializer
     queryset = models.Profession.objects.select_related('person', 'movie').all()
     filterset_class = filters.ProfessionFilter
-    pagination_class = pagination.APIListPagination
 
 
-class GenreListView(ListCreateAPIView): # need to custom
+class GenreViewSet(ModelViewSet):
     permission_classes = [permissions.IsAdminUserOrReadOnly]
-    serializer_class = serializers.GenreSerializer
     queryset = models.Genre.objects.all()
     filterset_class = filters.GenreFilter
-    pagination_class = pagination.APIListPagination
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializers.GenreListSerializer
+        return serializers.GenreSerializer
 
 
-class GenreDetailView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAdminUser]
-    serializer_class = serializers.GenreSerializer
-    queryset = models.Genre.objects.all()
-
-
-class CountryListView(ListCreateAPIView): # need to custom
+class CountryViewSet(ModelViewSet):
     permission_classes = [permissions.IsAdminUserOrReadOnly]
-    serializer_class = serializers.CountrySerializer
     queryset = models.Country.objects.all()
     filterset_class = filters.CountryFilter
-    pagination_class = pagination.APIListPagination
 
-
-class CountryDetailView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAdminUser]
-    serializer_class = serializers.CountrySerializer
-    queryset = models.Country.objects.all()
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializers.CountryListSerializer
+        return serializers.CountrySerializer
