@@ -3,6 +3,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import CreateAPIView, ListAPIView, GenericAPIView, ListCreateAPIView, \
     RetrieveUpdateDestroyAPIView
 from catalog import models, serializers, filters, permissions, pagination
@@ -42,7 +43,16 @@ class LogoutView(APIView):
         return Response({"success": "User logged out."})
 
 
-class UserView(ListAPIView): # testing
+class UserListView(ListCreateAPIView): # need to custom
+    permission_classes = [permissions.IsAdminUserOrReadOnly]
+    serializer_class = serializers.UserSerializer
+    queryset = models.User.objects.all()
+    # filterset_class = filters.UserFilter
+    pagination_class = pagination.APIListPagination
+
+
+class UserDetailView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsUserOrAdminOrReadOnly]
     serializer_class = serializers.UserSerializer
     queryset = models.User.objects.all()
 
@@ -89,7 +99,20 @@ class RatingDetailView(RetrieveUpdateDestroyAPIView):
     queryset = models.Rating.objects.select_related('user', 'movie').all()
 
 
-class PersonListView(ListCreateAPIView): # need to custom
+# class PersonListView(ListCreateAPIView): # need to custom
+#     permission_classes = [permissions.IsAdminUserOrReadOnly]
+#     serializer_class = serializers.PersonSerializer
+#     queryset = models.Person.objects.prefetch_related('movies').all()
+#     # filterset_class = filters.PersonFilter
+#     pagination_class = pagination.APIListPagination
+#
+#
+# class PersonDetailView(RetrieveUpdateDestroyAPIView): # need to custom
+#     permission_classes = [permissions.IsAdminUserOrReadOnly]
+#     serializer_class = serializers.PersonSerializer
+#     queryset = models.Person.objects.prefetch_related('movies').all()
+
+class PersonViewSet(ModelViewSet):
     permission_classes = [permissions.IsAdminUserOrReadOnly]
     serializer_class = serializers.PersonSerializer
     queryset = models.Person.objects.prefetch_related('movies').all()
@@ -97,24 +120,12 @@ class PersonListView(ListCreateAPIView): # need to custom
     pagination_class = pagination.APIListPagination
 
 
-class PersonDetailView(RetrieveUpdateDestroyAPIView): # need to custom
-    permission_classes = [permissions.IsAdminUserOrReadOnly]
-    serializer_class = serializers.PersonSerializer
-    queryset = models.Person.objects.prefetch_related('movies').all()
-
-
-class ProfessionListView(ListCreateAPIView):
+class ProfessionViewSet(ModelViewSet):
     permission_classes = [IsAdminUser]
     serializer_class = serializers.ProfessionSerializer
     queryset = models.Profession.objects.select_related('person', 'movie').all()
     filterset_class = filters.ProfessionFilter
     pagination_class = pagination.APIListPagination
-
-
-class ProfessionDetailView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAdminUser]
-    serializer_class = serializers.ProfessionSerializer
-    queryset = models.Profession.objects.select_related('person', 'movie').all()
 
 
 class GenreListView(ListCreateAPIView): # need to custom

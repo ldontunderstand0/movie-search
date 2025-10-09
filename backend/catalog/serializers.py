@@ -11,7 +11,13 @@ from utils.serializers import BaseModelSerializer
 from catalog import models
 
 
-class SignUpSerializer(ModelSerializer):
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = ['id', 'username', 'email', 'password']
+
+
+class SignUpSerializer(UserSerializer):
     password1 = CharField(
         write_only=True,
         required=True,
@@ -23,9 +29,8 @@ class SignUpSerializer(ModelSerializer):
         max_length=100,
         validators=[validate_password])
 
-    class Meta:
-        model = models.User
-        fields = ['id', 'username', 'email', 'password1', 'password2']
+    class Meta(UserSerializer.Meta):
+        fields = UserSerializer.Meta.fields + ['password1', 'password2']
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, attrs):
@@ -45,16 +50,9 @@ class SignUpSerializer(ModelSerializer):
         return instance
 
 
-class LoginSerializer(ModelSerializer):
-    class Meta:
-        model = models.User
+class LoginSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
         fields = ['username', 'password']
-
-
-class UserSerializer(ModelSerializer): # testing
-    class Meta:
-        model = models.User
-        fields = ['id', 'username', 'email', 'password']
 
 
 class PersonSerializer(BaseModelSerializer):
