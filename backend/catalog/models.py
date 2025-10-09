@@ -231,9 +231,10 @@ class Review(models.Model):
     type = models.CharField(max_length=200, verbose_name='Тип', choices=Type.choices)
     title = models.CharField(max_length=200, verbose_name='Заголовок')
     text = models.TextField(verbose_name='Текст')
-    date = models.DateTimeField(default=timezone.now, verbose_name='Дата')
     movie = models.ForeignKey('Movie', on_delete=models.PROTECT, verbose_name='Кино', related_name='reviews')
     user = models.ForeignKey('User', on_delete=models.PROTECT, verbose_name='Пользователь', related_name='reviews')
+    created_at = models.DateTimeField(auto_now_add=timezone.now, verbose_name='Дата создания')
+    updated_at = models.DateTimeField(auto_now=timezone.now, verbose_name='Дата изменения')
 
     objects = models.Manager()
 
@@ -243,7 +244,7 @@ class Review(models.Model):
     class Meta:
         verbose_name = "Рецензия"
         verbose_name_plural = "Рецензии"
-        ordering = ['-date']
+        ordering = ['-created_at']
 
     def get_absolute_url(self):
         return reverse('api:review', args=[self.pk])

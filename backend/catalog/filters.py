@@ -1,6 +1,7 @@
 from django.db.models.functions import ExtractYear
 from django_filters import rest_framework as filters
-from .models import Movie, Genre, Country
+from .models import Movie, Genre, Country, User, Review
+
 
 class MovieFilter(filters.FilterSet):
 
@@ -43,3 +44,31 @@ class MovieFilter(filters.FilterSet):
     class Meta:
         model = Movie
         fields = ['search', 'type', 'year', 'genre', 'country', 'sort']
+
+
+class ReviewFilter(filters.FilterSet):
+
+    movie = filters.ModelChoiceFilter(
+        queryset=Movie.objects,
+        field_name='movie',
+        to_field_name='id'
+    )
+
+    user = filters.ModelChoiceFilter(
+        queryset=User.objects,
+        field_name='user',
+        to_field_name='id'
+    )
+
+    type = filters.ChoiceFilter(choices=Review.Type.choices)
+
+    sort = filters.OrderingFilter(
+        fields=[
+            ('created_at', 'created_at'),
+            ('updated_at', 'updated_at'),
+        ]
+    )
+
+    class Meta:
+        model = Review
+        fields = ['movie', 'user', 'type', 'sort']
