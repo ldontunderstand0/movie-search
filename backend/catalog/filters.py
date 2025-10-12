@@ -1,3 +1,4 @@
+from django.db.models import Count, Q, Avg
 from django.db.models.functions import ExtractYear
 from django_filters import rest_framework as filters
 from catalog import models
@@ -6,6 +7,13 @@ from catalog import models
 class UserFilter(filters.FilterSet):
 
     search = filters.CharFilter(method='filter_by_search')
+    sort = filters.OrderingFilter(
+        fields=(
+            ('_watches', 'watches'),
+            ('_rates', 'rates'),
+            ('_reviews', 'reviews'),
+        )
+    )
 
     @staticmethod
     def filter_by_search(queryset, name, value):
@@ -15,7 +23,7 @@ class UserFilter(filters.FilterSet):
 
     class Meta:
         model = models.User
-        fields = ['search']
+        fields = ['search', 'sort']
 
 
 
@@ -29,7 +37,7 @@ class MovieFilter(filters.FilterSet):
         queryset=models.Movie.objects
         .annotate(year=ExtractYear('release_date')).values_list('year', flat=True).distinct(),
         to_field_name='year',
-        field_name='release_date__year'
+        field_name='release_date__year',
     )
 
     genre = filters.ModelChoiceFilter(
@@ -46,7 +54,7 @@ class MovieFilter(filters.FilterSet):
 
     sort = filters.OrderingFilter(
         fields=[
-            ('rate', 'rate'),
+            ('_rate', 'rate'),
             ('release_date', 'release_date'),
             ('title', 'title'),
         ]

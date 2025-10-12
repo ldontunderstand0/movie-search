@@ -65,8 +65,6 @@ class Movie(models.Model):
     title = models.CharField(max_length=200, verbose_name='Название')
     release_date = models.DateField(verbose_name='Дата выхода', blank=True, null=True)
     description = models.TextField(verbose_name='Описание', blank=True, null=True)
-    rate = models.FloatField(verbose_name='Оценка', blank=True, default=0)
-    # rates = models.ManyToManyField('Rate', through='Rating', verbose_name='Оценки', related_name='movies', blank=True)
     genres = models.ManyToManyField('Genre', verbose_name='Жанры', related_name='movies', blank=True)
     countries = models.ManyToManyField('Country', verbose_name='Страны', related_name='movies', blank=True)
     poster = models.ImageField(
@@ -102,7 +100,7 @@ class Movie(models.Model):
     class Meta:
         verbose_name = "Кино"
         verbose_name_plural = "Кино"
-        ordering = ['-rate']
+        ordering = ['title']
 
     def get_absolute_url(self):
         return reverse('api:movie', args=[self.pk])

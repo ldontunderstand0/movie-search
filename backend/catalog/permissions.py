@@ -1,6 +1,11 @@
 from rest_framework import permissions
 
 
+class IsUnauthenticated(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return not(request.user and request.user.is_authenticated)
+
+
 class IsAdminUserOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:

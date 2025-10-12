@@ -1,5 +1,4 @@
 from django.contrib.auth.password_validation import validate_password
-from django.db.models import Avg
 from rest_framework.serializers import (
     Serializer,
     ModelSerializer,
@@ -8,6 +7,7 @@ from rest_framework.serializers import (
     SerializerMethodField,
 )
 
+from utils import querysets
 from utils.serializers import BaseModelSerializer
 from catalog import models
 
@@ -32,7 +32,7 @@ class SignUpSerializer(UserSerializer):
         validators=[validate_password])
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ['password1', 'password2']
+        fields = ['username', 'email', 'password1', 'password2']
 
     def validate(self, attrs):
         if attrs['password1'] != attrs['password2']:
@@ -66,18 +66,15 @@ class UserListSerializer(UserSerializer):
 
     @staticmethod
     def get_watches(obj):
-        watches = models.Rating.objects.filter(user=obj, is_watched=True)
-        return watches.count()
+        return getattr(obj, '_watches')
 
     @staticmethod
     def get_rates(obj):
-        rates = models.Rating.objects.filter(user=obj, rate__isnull=False)
-        return rates.count()
+        return getattr(obj, '_rates')
 
     @staticmethod
     def get_reviews(obj):
-        reviews = models.Review.objects.filter(user=obj)
-        return reviews.count()
+        return getattr(obj, '_reviews')
 
 
 class PersonSerializer(BaseModelSerializer):
@@ -103,8 +100,7 @@ class GenreListSerializer(GenreSerializer):
 
     @staticmethod
     def get_movies_count(obj):
-        movies = models.Movie.objects.filter(genres=obj)
-        return movies.count()
+        return obj.movies.count()
 
 
 class CountrySerializer(ModelSerializer):
@@ -118,8 +114,7 @@ class CountryListSerializer(CountrySerializer):
 
     @staticmethod
     def get_movies_count(obj):
-        movies = models.Movie.objects.filter(countries=obj)
-        return movies.count()
+        return obj.movies.count()
 
 
 class RatingSerializer(BaseModelSerializer):
@@ -157,14 +152,12 @@ class MovieInfoSerializer(MovieSerializer):
 
     @staticmethod
     def get_rate(obj):
-        rates = models.Rating.objects.filter(movie=obj)
-        avg_rate = rates.aggregate(avg=Avg('rate'))
-        return avg_rate['avg'] or 0.0
+        return getattr(obj, '_rate')
 
     def get_user_actions(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
-            rating = models.Rating.objects.filter(movie=obj, user=request.user).first()
+            rating = obj.ratings.filter(user=request.user).first()
             return RatingSerializer(
                 rating,
                 exclude_fields=['movie', 'user', 'created_at', 'updated_at']
@@ -202,11 +195,11 @@ class MovieDetailSerializer(MovieInfoSerializer):
 
     @staticmethod
     def get_rates_count(obj):
-        return models.Rating.objects.filter(movie=obj).count()
+        return obj.ratings.count()
 
     @staticmethod
     def get_actors(obj):
-        actors = models.Profession.actors.filter(movie=obj).select_related('person')
+        actors = obj.professions.filter(name=models.Profession.Type.ACTOR).select_related('person')
         return PersonSerializer(
             [actor.person for actor in actors],
             many=True,
@@ -215,7 +208,7 @@ class MovieDetailSerializer(MovieInfoSerializer):
 
     @staticmethod
     def get_directors(obj):
-        directors = models.Profession.directors.filter(movie=obj)
+        directors = obj.professions.filter(name=models.Profession.Type.DIRECTOR).select_related('person')
         return PersonSerializer(
             [director.person for director in directors],
             many=True,
@@ -238,5 +231,4 @@ class PersonDetailSerializer(PersonSerializer):
 
     @staticmethod
     def get_movies_count(obj):
-        movies = models.Profession.objects.filter(person=obj)
-        return movies.count()
+        return obj.movies.count()

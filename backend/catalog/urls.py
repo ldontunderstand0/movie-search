@@ -19,6 +19,3 @@ urlpatterns = [
     path('login/', views.LoginView.as_view()),
     path('logout/', views.LogoutView.as_view()),
 ] + router.urls
-# сортировка по рейтингу фильмов, сортировка по новым полям пользователя, персоны
-# баг permissions
-# баг регистрации
