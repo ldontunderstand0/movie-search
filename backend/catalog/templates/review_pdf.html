@@ -1,0 +1,143 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+@page {
+    size: 200mm 255mm;
+    margin: 10mm;
+}
+.review-item {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.avatar-icon {
+    font-size: 16px;
+    color: #666;
+}
+.user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+}
+
+.review-date {
+    font-size: 12px;
+    color: #666;
+}
+.review-content {
+    margin-left: 52px;
+}
+
+.review-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+    margin: 0 0 12px 0;
+    line-height: 1.3;
+}
+.review-status {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000000;
+    text-align: center;
+}
+
+.review-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    white-space: normal;
+    word-break: break-word;
+    text-align: justify;
+    overflow-wrap: break-word;
+}
+
+.review-text p {
+    margin: 0 0 10px 0;
+}
+
+.review-text p:last-child {
+    margin-bottom: 0;
+}
+
+.review-type-positive {
+    background: #f8fff8;
+    border-left: 4px solid #2ed573;
+}
+
+.review-type-negative {
+    background: #fff8f8;
+    border-left: 4px solid #ff4757;
+}
+
+.review-type-neutral {
+    background: #f8f8f8;
+    border-left: 4px solid #747d8c;
+}
+
+.review-status-positive {
+    color: #2ed573;
+}
+
+.review-status-negative {
+    color: #ff4757;
+}
+
+.review-status-neutral {
+    color: #000000;
+}
+
+    </style>
+</head>
+<body>
+<h3 class="review-status review-status-{% if review.status == 'Подтверждено' %}positive{% elif review.status == 'Отклонено' %}negative{% else %}neutral{% endif %}">{{ review.status }}</h3>
+
+<div class="review-item review-type-{% if review.type == 'Положительная' %}positive{% elif review.type == 'Отрицательная' %}negative{% else %}neutral{% endif %}">
+    <div class="review-header">
+        <div class="user-avatar">
+            <span class="avatar-icon">👤</span>
+        </div>
+        <div class="user-info">
+            <div class="user-name">{{ review.user.username }}</div>
+            
+            <div class="review-date">
+                {{ review.created_at|date:"d.m.Y"}}{% if review.created_at|date:"d.m.Y" != review.updated_at|date:"d.m.Y" %}, изменено
+                {{ review.updated_at|date:"d.m.Y"}}{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="review-content">
+        <h3 class="review-title">{{ review.title }}</h3>
+        <div class="review-text">
+            {{ review.text }}
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

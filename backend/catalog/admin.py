@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 from . import models
 
 
@@ -26,7 +28,7 @@ class ReviewInline(admin.StackedInline):
     can_delete = False
     verbose_name = 'Рецензия'
     verbose_name_plural = 'Рецензия'
-    fields = ['title', 'text', 'movie', 'user', 'created_at', 'updated_at']
+    fields = ['title', 'text', 'movie', 'user', 'created_at', 'updated_at', 'status']
 
 
 @admin.register(models.User)
@@ -142,8 +144,20 @@ class CountryAdmin(admin.ModelAdmin):
 
 @admin.register(models.Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ['title', 'text', 'movie', 'user', 'created_at', 'updated_at']
-    list_filter = ['movie', 'user']
+    list_display = ['title', 'text_display', 'movie', 'user', 'created_at', 'updated_at', 'status', 'review_pdf']
+    list_filter = ['status', 'movie', 'user']
     date_hierarchy = 'created_at'
     list_display_links = ['title']
     raw_id_fields = ['movie', 'user']
+
+    @admin.display()
+    def text_display(self, obj):
+        return obj.text[:30] + '...' if len(obj.text) > 30 else obj
+    text_display.short_description = 'Текст'
+
+    @admin.display()
+    def review_pdf(self, obj):
+        url = reverse('catalog:admin_review_pdf', args=[obj.id])
+        return mark_safe(f'<a href="{url}">PDF</a>')
+
+    review_pdf.short_description = 'PDF со статусом'

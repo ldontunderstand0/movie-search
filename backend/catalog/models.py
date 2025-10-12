@@ -229,13 +229,19 @@ class Review(models.Model):
         NEGATIVE = ('Отрицательная', 'Отрицательная')
         NEUTRAL = ('Нейтральная', 'Нейтральная')
 
+    class Status(models.TextChoices):
+        IN_PROGRESS = ('В обработке', 'В обработке')
+        NOT_APPROVED = ('Отклонено', 'Отклонено')
+        APPROVED = ('Подтверждено', 'Подтверждено')
+
     type = models.CharField(max_length=200, verbose_name='Тип', choices=Type.choices)
     title = models.CharField(max_length=200, verbose_name='Заголовок')
-    text = models.TextField(verbose_name='Текст')
+    text = models.TextField(verbose_name='Текст', max_length=2000)
     movie = models.ForeignKey('Movie', on_delete=models.PROTECT, verbose_name='Кино', related_name='reviews')
     user = models.ForeignKey('User', on_delete=models.PROTECT, verbose_name='Пользователь', related_name='reviews')
     created_at = models.DateTimeField(auto_now_add=timezone.now, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=timezone.now, verbose_name='Дата изменения')
+    status = models.CharField(choices=Status.choices, default=Status.IN_PROGRESS, verbose_name='Статус')
 
     objects = models.Manager()
 

@@ -1,4 +1,8 @@
 from django.contrib.auth import login, logout
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
+from django.http import HttpResponse
 from django.db.models import Prefetch
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
@@ -6,8 +10,25 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import CreateAPIView
+import weasyprint
+from urllib.parse import quote
 from utils import querysets
 from catalog import models, serializers, filters, permissions
+
+
+@staff_member_required
+def admin_review_pdf(request, review_id):
+    review = get_object_or_404(models.Review, id=review_id)
+    print(len(review.text))
+    html = render_to_string('review_pdf.html', {'review': review})
+    filename = f"review_{review.user.username}_{review.movie.title}.pdf"
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f"filename*=UTF-8''{quote(filename)}"
+    # response['Content-Disposition'] = f"attachment; filename*=UTF-8''{quote(filename)}"
+    weasyprint.HTML(string=html).write_pdf(response,)
+                                           #stylesheets=[weasyprint.CSS(
+                                               #settings.STATIC_URL / 'css/pdf.css')])
+    return response
 
 
 class SignUpView(CreateAPIView):
