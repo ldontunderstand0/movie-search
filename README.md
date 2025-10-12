@@ -13,17 +13,17 @@
 Исключить ситуацию, когда в админке потенциально загружается select с большим числом вариантом выбора. В этих случаях обязательно использовать raw_id_fields
 
 Настройки:
-list_display (+использование внутри list_display собственного метода)
-list_filter
-inlines
-date_hierarchy
-@admin.display
-short_description
-filter_horizontal
-list_display_links
-raw_id_fields
-readonly_fields
-search_fields
+1. list_display (+использование внутри list_display собственного метода)
+2. list_filter
+3. inlines
+4. date_hierarchy
+5. @admin.display
+6. short_description
+7. filter_horizontal
+8. list_display_links
+9. raw_id_fields
+10. readonly_fields
+11. search_fields
 
 **Задание 2.**
 
