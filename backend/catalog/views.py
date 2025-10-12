@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import CreateAPIView
-import weasyprint
+from weasyprint import HTML
 from urllib.parse import quote
 from utils import querysets
 from catalog import models, serializers, filters, permissions
@@ -25,9 +25,7 @@ def admin_review_pdf(request, review_id):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f"filename*=UTF-8''{quote(filename)}"
     # response['Content-Disposition'] = f"attachment; filename*=UTF-8''{quote(filename)}"
-    weasyprint.HTML(string=html).write_pdf(response,)
-                                           #stylesheets=[weasyprint.CSS(
-                                               #settings.STATIC_URL / 'css/pdf.css')])
+    HTML(string=html).write_pdf(response)
     return response
 
 

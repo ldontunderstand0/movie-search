@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from . import models
@@ -149,6 +149,7 @@ class ReviewAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     list_display_links = ['title']
     raw_id_fields = ['movie', 'user']
+    actions = ['approve_reviews', 'reject_reviews']
 
     @admin.display()
     def text_display(self, obj):
@@ -159,5 +160,15 @@ class ReviewAdmin(admin.ModelAdmin):
     def review_pdf(self, obj):
         url = reverse('catalog:admin_review_pdf', args=[obj.id])
         return mark_safe(f'<a href="{url}">PDF</a>')
+
+    def approve_reviews(self, request, queryset):
+        updated = queryset.update(status=models.Review.Status.APPROVED)
+        self.message_user(request, f'{updated} рецензий одобрено', messages.SUCCESS)
+    approve_reviews.short_description = "Одобрить выбранные рецензии"
+    
+    def reject_reviews(self, request, queryset):
+        updated = queryset.update(status=models.Review.Status.NOT_APPROVED)
+        self.message_user(request, f'{updated} рецензий отклонено', messages.SUCCESS)
+    reject_reviews.short_description = "Отклонить выбранные рецензии"
 
     review_pdf.short_description = 'PDF со статусом'
