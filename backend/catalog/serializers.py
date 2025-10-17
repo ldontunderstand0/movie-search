@@ -1,13 +1,11 @@
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.serializers import (
-    Serializer,
     ModelSerializer,
     CharField,
     ValidationError,
     SerializerMethodField,
 )
 
-from utils import querysets
 from utils.serializers import BaseModelSerializer
 from catalog import models
 
@@ -127,6 +125,7 @@ class ReviewSerializer(ModelSerializer):
     class Meta:
         model = models.Review
         exclude = []
+        extra_kwargs = {'status': {'read_only': True}}
 
 
 class MovieSerializer(BaseModelSerializer):
@@ -227,7 +226,8 @@ class ProfessionDetailSerializer(ProfessionSerializer):
 
 class PersonListSerializer(PersonSerializer):
     class Meta(PersonSerializer.Meta):
-        exclude = PersonSerializer.Meta.exclude + ['movies', 'biography']
+        exclude = PersonSerializer.Meta.exclude + ['movies']
+        extra_kwargs = {'biography': {'write_only': True}}
 
 
 class PersonDetailSerializer(PersonSerializer):
@@ -237,3 +237,6 @@ class PersonDetailSerializer(PersonSerializer):
     @staticmethod
     def get_movies_count(obj):
         return obj.movies.count()
+
+    class Meta(PersonSerializer.Meta):
+        exclude = PersonSerializer.Meta.exclude + ['movies']
