@@ -6,7 +6,7 @@ from catalog import models
 
 class UserFilter(filters.FilterSet):
 
-    search = filters.CharFilter(method='filter_by_search')
+    search = filters.CharFilter(field_name='username', lookup_expr='contains')
     sort = filters.OrderingFilter(
         fields=(
             ('_watches', 'watches'),
@@ -14,12 +14,6 @@ class UserFilter(filters.FilterSet):
             ('_reviews', 'reviews'),
         )
     )
-
-    @staticmethod
-    def filter_by_search(queryset, name, value):
-        if value:
-            return queryset.filter(username__iregex=value)
-        return queryset
 
     class Meta:
         model = models.User
@@ -29,7 +23,7 @@ class UserFilter(filters.FilterSet):
 
 class MovieFilter(filters.FilterSet):
 
-    search = filters.CharFilter(method='filter_by_search')
+    search = filters.CharFilter(field_name='title', lookup_expr='iregex')
 
     type = filters.ChoiceFilter(choices=models.Movie.Type.choices)
 
@@ -60,12 +54,6 @@ class MovieFilter(filters.FilterSet):
         ]
     )
 
-    @staticmethod
-    def filter_by_search(queryset, name, value):
-        if value:
-            return queryset.filter(title__iregex=value)
-        return queryset
-
     class Meta:
         model = models.Movie
         fields = ['search', 'type', 'year', 'genre', 'country', 'sort']
@@ -73,13 +61,7 @@ class MovieFilter(filters.FilterSet):
 
 class PersonFilter(filters.FilterSet):
 
-    search = filters.CharFilter(method='filter_by_search')
-
-    @staticmethod
-    def filter_by_search(queryset, name, value):
-        if value:
-            return queryset.filter(full_name__iregex=value)
-        return queryset
+    search = filters.CharFilter(field_name='full_name', lookup_expr='iregex')
 
     class Meta:
         model = models.Person
@@ -163,13 +145,7 @@ class ProfessionFilter(filters.FilterSet):
 
 class GenreFilter(filters.FilterSet):
 
-    search = filters.CharFilter(method='filter_by_search')
-
-    @staticmethod
-    def filter_by_search(queryset, name, value):
-        if value:
-            return queryset.filter(name__iregex=value)
-        return queryset
+    search = filters.CharFilter(field_name='name', lookup_expr='iсontains')
 
     class Meta:
         model = models.Genre
@@ -178,13 +154,7 @@ class GenreFilter(filters.FilterSet):
 
 class CountryFilter(filters.FilterSet):
 
-    search = filters.CharFilter(method='filter_by_search')
-
-    @staticmethod
-    def filter_by_search(queryset, name, value):
-        if value:
-            return queryset.filter(name__iregex=value)
-        return queryset
+    search = filters.CharFilter(field_name='name', lookup_expr='icontains')
 
     class Meta:
         model = models.Country

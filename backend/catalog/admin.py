@@ -19,7 +19,7 @@ class RatingInline(admin.StackedInline):
     can_delete = False
     verbose_name = 'Оценка'
     verbose_name_plural = 'Оценка'
-    fields = ['rate', 'movie', 'user', 'created_at', 'updated_at']
+    fields = ['rate', 'movie', 'user']
 
 
 class ReviewInline(admin.StackedInline):
@@ -28,7 +28,7 @@ class ReviewInline(admin.StackedInline):
     can_delete = False
     verbose_name = 'Рецензия'
     verbose_name_plural = 'Рецензия'
-    fields = ['title', 'text', 'movie', 'user', 'created_at', 'updated_at', 'status']
+    fields = ['title', 'text', 'movie', 'user', 'status']
 
 
 @admin.register(models.User)
@@ -38,7 +38,6 @@ class UserAdmin(admin.ModelAdmin):
     inlines = [RatingInline, ReviewInline]
     list_display_links = ['username']
     search_fields = ['username', 'email']
-    readonly_fields = ['password_display']
 
     @admin.display()
     def password_display(self, obj):
@@ -55,7 +54,8 @@ class MovieAdmin(admin.ModelAdmin):
         'description_display',
         'display_genres',
         'display_countries',
-        'poster'
+        'poster_preview',
+        'trailer_url'
     ]
     list_filter = ['type', 'genres']
     inlines = [ProfessionInline, RatingInline, ReviewInline]
@@ -63,6 +63,7 @@ class MovieAdmin(admin.ModelAdmin):
     filter_horizontal = ('genres', 'countries')
     list_display_links = ['title']
     search_fields = ['title', 'description']
+    readonly_fields = ('poster_detail_preview',)
 
     @admin.display()
     def description_display(self, obj):
@@ -79,19 +80,27 @@ class MovieAdmin(admin.ModelAdmin):
     def display_countries(self, obj):
         return ", ".join([country.name for country in obj.countries.all()])
 
+    @admin.display()
     def poster_preview(self, obj):
         if obj.poster:
-            return f'<img src="{obj.poster.url}" style="max-height: 100px;" />'
+            return mark_safe(f'<img src="{obj.poster.url}" width="40" />')
         return "Нет постера"
     poster_preview.allow_tags = True
     poster_preview.short_description = 'Превью постера'
+
+    def poster_detail_preview(self, obj):
+        if obj.poster:
+            return mark_safe(f'<img src="{obj.poster.url}" width="200" />')
+        return "Нет постера"
+    poster_detail_preview.allow_tags = True
+    poster_detail_preview.short_description = 'Текущий постер'
 
     display_countries.short_description = 'Страны'
 
 
 @admin.register(models.Person)
 class PersonAdmin(admin.ModelAdmin):
-    list_display = ['full_name', 'birth_date', 'sex', 'biography_display', 'display_movies']
+    list_display = ['full_name', 'birth_date', 'sex', 'display_biography', 'display_movies']
     list_filter = ['sex']
     inlines = [ProfessionInline]
     date_hierarchy = 'birth_date'
@@ -99,15 +108,29 @@ class PersonAdmin(admin.ModelAdmin):
     search_fields = ['full_name']
 
     @admin.display()
-    def biography_display(self, obj):
-        return obj.biography[:30] + '...' if len(obj.biography) > 30 else obj
-    biography_display.short_description = 'Биография'
-
-    @admin.display()
     def display_movies(self, obj):
-        return ", ".join([movie.title for movie in obj.movies.all()])
+        return ", ".join([movie.title for movie in obj.movies.all()[:5]])
 
     display_movies.short_description = 'Фильмы'
+
+    @admin.display()
+    def display_biography(self, obj):
+        if obj.biography and obj.biography.path.endswith(('.txt', '.srt')):
+            try:
+                with open(obj.biography.path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    # Ограничим длину, чтобы не раздувать таблицу
+                    if len(content) > 100:
+                        content = content[:100] + "…"
+                    # Для админки лучше оставить переносы как есть
+                    return content
+            except Exception as e:
+                return f"Ошибка: {e}"
+        return "Нет биографии"
+
+    display_biography.short_description = 'Биография'
+
+
 
 
 @admin.register(models.Profession)

@@ -80,7 +80,7 @@ class UserListSerializer(UserSerializer):
 class PersonSerializer(BaseModelSerializer):
     class Meta:
         model = models.Person
-        exclude = ['biography']
+        exclude = []
 
 
 class ProfessionSerializer(BaseModelSerializer):
@@ -157,19 +157,20 @@ class MovieInfoSerializer(MovieSerializer):
     def get_user_actions(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
-            rating = obj.ratings.filter(user=request.user).first()
+            rating = obj.ratings.filter(user=request.user)
             return RatingSerializer(
-                rating,
+                rating.first(),
                 exclude_fields=['movie', 'user', 'created_at', 'updated_at']
-            ).data if rating else None
+            ).data if rating.exists() else None
         return None
 
 
 class MovieListSerializer(MovieInfoSerializer):
     release_year = SerializerMethodField()
+    url = SerializerMethodField()
 
     class Meta(MovieInfoSerializer.Meta):
-        fields = MovieInfoSerializer.Meta.fields + ['release_year']
+        fields = MovieInfoSerializer.Meta.fields + ['release_year', 'url']
         extra_kwargs = {
             'release_date': {'write_only': True},
             'description':  {'write_only': True},
@@ -181,6 +182,10 @@ class MovieListSerializer(MovieInfoSerializer):
     def get_release_year(obj):
         return obj.release_date.year
 
+    @staticmethod
+    def get_url(obj):
+        return obj.get_absolute_url()
+
 
 class MovieDetailSerializer(MovieInfoSerializer):
 
@@ -191,7 +196,7 @@ class MovieDetailSerializer(MovieInfoSerializer):
     directors = SerializerMethodField()
 
     class Meta(MovieInfoSerializer.Meta):
-        fields = MovieInfoSerializer.Meta.fields + ['rates_count', 'directors', 'actors']
+        fields = MovieInfoSerializer.Meta.fields + ['trailer_url', 'rates_count', 'directors', 'actors']
 
     @staticmethod
     def get_rates_count(obj):
@@ -199,11 +204,11 @@ class MovieDetailSerializer(MovieInfoSerializer):
 
     @staticmethod
     def get_actors(obj):
-        actors = obj.professions.filter(name=models.Profession.Type.ACTOR).select_related('person')
+        actors = obj.professions.exclude(name=models.Profession.Type.DIRECTOR).select_related('person')
         return PersonSerializer(
             [actor.person for actor in actors],
             many=True,
-            exclude_fields=['birth_date', 'sex', 'movies']
+            exclude_fields=['birth_date', 'sex', 'movies', 'biography']
         ).data
 
     @staticmethod
@@ -212,7 +217,7 @@ class MovieDetailSerializer(MovieInfoSerializer):
         return PersonSerializer(
             [director.person for director in directors],
             many=True,
-            exclude_fields=['birth_date', 'sex', 'movies'],
+            exclude_fields=['birth_date', 'sex', 'movies', 'biography'],
         ).data
 
 
@@ -222,7 +227,7 @@ class ProfessionDetailSerializer(ProfessionSerializer):
 
 class PersonListSerializer(PersonSerializer):
     class Meta(PersonSerializer.Meta):
-        exclude = PersonSerializer.Meta.exclude + ['movies']
+        exclude = PersonSerializer.Meta.exclude + ['movies', 'biography']
 
 
 class PersonDetailSerializer(PersonSerializer):

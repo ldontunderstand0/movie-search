@@ -25,7 +25,7 @@ class User(AbstractUser):
         ordering = ['username']
 
     def get_absolute_url(self):
-        return reverse('api:profile', args=[self.pk])
+        return reverse('catalog:user-detail', args=[self.pk])
 
 
 class Genre(models.Model):
@@ -42,7 +42,7 @@ class Genre(models.Model):
         ordering = ['name']
 
     def get_absolute_url(self):
-        return reverse('api:genre', args=[self.pk])
+        return reverse('catalog:genre-detail', args=[self.pk])
 
 
 class MovieManager(models.Manager):
@@ -74,6 +74,7 @@ class Movie(models.Model):
         verbose_name='Постер',
         help_text='Загрузите постер фильма'
     )
+    trailer_url = models.URLField(blank=True, null=True, verbose_name='Ссылка на трейлер')
 
     objects = models.Manager()
     movies = MovieManager()
@@ -103,7 +104,7 @@ class Movie(models.Model):
         ordering = ['title']
 
     def get_absolute_url(self):
-        return reverse('api:movie', args=[self.pk])
+        return reverse('catalog:movie-detail', args=[self.pk])
 
 
 class Person(models.Model):
@@ -115,7 +116,13 @@ class Person(models.Model):
     full_name = models.CharField(max_length=200, verbose_name='ФИО')
     birth_date = models.DateField(verbose_name='Дата рождения', blank=True, null=True)
     sex = models.CharField(max_length=7, verbose_name='Пол', blank=True, null=True, choices=Type.choices)
-    biography = models.TextField(verbose_name='Биография', blank=True, null=True)
+    biography = models.FileField(
+        upload_to='files/biographies/',
+        blank=True,
+        null=True,
+        verbose_name='Биография',
+        help_text='Файл с биографией (.txt)'
+    )
     movies = models.ManyToManyField(
         'Movie', verbose_name='Фильмы', related_name='movies', through='Profession', blank=True
     )
@@ -131,7 +138,7 @@ class Person(models.Model):
         ordering = ['-birth_date']
 
     def get_absolute_url(self):
-        return reverse('api:person', args=[self.pk])
+        return reverse('catalog:person-detail', args=[self.pk])
 
 
 class ActorManager(models.Manager):
@@ -168,7 +175,7 @@ class Profession(models.Model):
         ordering = ['name']
 
     def get_absolute_url(self):
-        return reverse('api:profession', args=[self.pk])
+        return reverse('catalog:profession-detail', args=[self.pk])
 
 
 class Rating(models.Model):
@@ -203,7 +210,7 @@ class Rating(models.Model):
         ordering = ['-created_at']
 
     def get_absolute_url(self):
-        return reverse('api:rating', args=[self.pk])
+        return reverse('catalog:rating-detail', args=[self.pk])
 
 
 class Country(models.Model):
@@ -220,7 +227,7 @@ class Country(models.Model):
         ordering = ['name']
 
     def get_absolute_url(self):
-        return reverse('api:country', args=[self.pk])
+        return reverse('catalog:country-detail', args=[self.pk])
 
 
 class Review(models.Model):
@@ -254,4 +261,4 @@ class Review(models.Model):
         ordering = ['-created_at']
 
     def get_absolute_url(self):
-        return reverse('api:review', args=[self.pk])
+        return reverse('catalog:review-detail', args=[self.pk])
