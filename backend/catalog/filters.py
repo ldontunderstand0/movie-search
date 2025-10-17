@@ -1,4 +1,3 @@
-from django.db.models import Count, Q, Avg
 from django.db.models.functions import ExtractYear
 from django_filters import rest_framework as filters
 from catalog import models
