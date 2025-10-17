@@ -136,8 +136,8 @@ class MovieSerializer(BaseModelSerializer):
     def validate(self, attrs):
         title = attrs['title']
         release_date = attrs['release_date']
-        movie = models.Movie.objects.filter(title=title, release_date=release_date).first()
-        if movie:
+        movie = models.Movie.objects.filter(title=title, release_date=release_date)
+        if movie.exists():
             raise ValidationError('Movie already exists.')
         return attrs
 
@@ -147,7 +147,7 @@ class MovieInfoSerializer(MovieSerializer):
     user_actions = SerializerMethodField()
 
     class Meta(MovieSerializer.Meta):
-        fields = MovieSerializer.Meta.fields + [ 'rate', 'user_actions']
+        fields = MovieSerializer.Meta.fields + ['rate', 'user_actions']
 
     @staticmethod
     def get_rate(obj):
@@ -157,10 +157,7 @@ class MovieInfoSerializer(MovieSerializer):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             rating = obj.ratings.filter(user=request.user)
-            return RatingSerializer(
-                rating.first(),
-                exclude_fields=['movie', 'user', 'created_at', 'updated_at']
-            ).data if rating.exists() else None
+            return rating.values('id', 'rate', 'is_watched') if rating.exists() else None
         return None
 
 
@@ -169,13 +166,7 @@ class MovieListSerializer(MovieInfoSerializer):
     url = SerializerMethodField()
 
     class Meta(MovieInfoSerializer.Meta):
-        fields = MovieInfoSerializer.Meta.fields + ['release_year', 'url']
-        extra_kwargs = {
-            'release_date': {'write_only': True},
-            'description':  {'write_only': True},
-            'genres':       {'write_only': True},
-            'countries':    {'write_only': True},
-        }
+        fields = ['id', 'type', 'title', 'poster', 'rate', 'user_actions', 'release_year', 'url']
 
     @staticmethod
     def get_release_year(obj):
@@ -187,7 +178,6 @@ class MovieListSerializer(MovieInfoSerializer):
 
 
 class MovieDetailSerializer(MovieInfoSerializer):
-
     genres = GenreSerializer(many=True, read_only=True)
     countries = CountrySerializer(many=True, read_only=True)
     rates_count = SerializerMethodField()
@@ -203,21 +193,13 @@ class MovieDetailSerializer(MovieInfoSerializer):
 
     @staticmethod
     def get_actors(obj):
-        actors = obj.professions.exclude(name=models.Profession.Type.DIRECTOR).select_related('person')
-        return PersonSerializer(
-            [actor.person for actor in actors],
-            many=True,
-            exclude_fields=['birth_date', 'sex', 'movies', 'biography']
-        ).data
+        actors = obj.professions.exclude(name=models.Profession.Type.DIRECTOR)
+        return actors.select_related('person').values('person__id', 'person__full_name')
 
     @staticmethod
     def get_directors(obj):
-        directors = obj.professions.filter(name=models.Profession.Type.DIRECTOR).select_related('person')
-        return PersonSerializer(
-            [director.person for director in directors],
-            many=True,
-            exclude_fields=['birth_date', 'sex', 'movies', 'biography'],
-        ).data
+        directors = obj.professions.filter(name=models.Profession.Type.DIRECTOR)
+        return directors.select_related('person').values('person__id', 'person__full_name')
 
 
 class ProfessionDetailSerializer(ProfessionSerializer):

@@ -19,7 +19,6 @@ from catalog import models, serializers, filters, permissions
 @staff_member_required
 def admin_review_pdf(request, review_id):
     review = get_object_or_404(models.Review, id=review_id)
-    print(len(review.text))
     html = render_to_string('review_pdf.html', {'review': review})
     filename = f"review_{review.user.username}_{review.movie.title}.pdf"
     response = HttpResponse(content_type='application/pdf')

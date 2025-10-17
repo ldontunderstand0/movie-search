@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from . import models
+from catalog import models
 
 
 class ProfessionInline(admin.StackedInline):
@@ -42,6 +42,7 @@ class UserAdmin(admin.ModelAdmin):
     @admin.display()
     def password_display(self, obj):
         return "••••••••"
+
     password_display.short_description = 'Пароль (зашифрован)'
 
 
@@ -69,33 +70,29 @@ class MovieAdmin(admin.ModelAdmin):
     def description_display(self, obj):
         return obj.description[:30] + '...' if len(obj.description) > 30 else obj
 
-    description_display.short_description = 'Описание'
-
     @admin.display()
     def display_genres(self, obj):
-        return ", ".join([genre.name for genre in obj.genres.all()])
-    display_genres.short_description = 'Жанры'
+        return ", ".join(obj.genres.values_list('name', flat=True))
 
     @admin.display()
     def display_countries(self, obj):
-        return ", ".join([country.name for country in obj.countries.all()])
+        return ", ".join(obj.countries.values_list('name', flat=True))
 
     @admin.display()
     def poster_preview(self, obj):
-        if obj.poster:
-            return mark_safe(f'<img src="{obj.poster.url}" width="40" />')
-        return "Нет постера"
+        return mark_safe(f'<img src="{obj.poster.url}" width="40" />') if obj.poster else 'Нет постера'
+
+    @admin.display()
+    def poster_detail_preview(self, obj):
+        return mark_safe(f'<img src="{obj.poster.url}" width="200" />') if obj.poster else "Нет постера"
+
+    description_display.short_description = 'Описание'
+    display_genres.short_description = 'Жанры'
+    display_countries.short_description = 'Страны'
     poster_preview.allow_tags = True
     poster_preview.short_description = 'Превью постера'
-
-    def poster_detail_preview(self, obj):
-        if obj.poster:
-            return mark_safe(f'<img src="{obj.poster.url}" width="200" />')
-        return "Нет постера"
     poster_detail_preview.allow_tags = True
     poster_detail_preview.short_description = 'Текущий постер'
-
-    display_countries.short_description = 'Страны'
 
 
 @admin.register(models.Person)
@@ -109,28 +106,18 @@ class PersonAdmin(admin.ModelAdmin):
 
     @admin.display()
     def display_movies(self, obj):
-        return ", ".join([movie.title for movie in obj.movies.all()[:5]])
-
-    display_movies.short_description = 'Фильмы'
+        return ", ".join(obj.movies.values_list('title', flat=True)[:5])
 
     @admin.display()
     def display_biography(self, obj):
         if obj.biography and obj.biography.path.endswith(('.txt', '.srt')):
-            try:
-                with open(obj.biography.path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    # Ограничим длину, чтобы не раздувать таблицу
-                    if len(content) > 100:
-                        content = content[:100] + "…"
-                    # Для админки лучше оставить переносы как есть
-                    return content
-            except Exception as e:
-                return f"Ошибка: {e}"
+            with open(obj.biography.path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                return content[:100] + "…" if len(content) > 100 else content
         return "Нет биографии"
 
+    display_movies.short_description = 'Фильмы'
     display_biography.short_description = 'Биография'
-
-
 
 
 @admin.register(models.Profession)
@@ -177,7 +164,6 @@ class ReviewAdmin(admin.ModelAdmin):
     @admin.display()
     def text_display(self, obj):
         return obj.text[:30] + '...' if len(obj.text) > 30 else obj
-    text_display.short_description = 'Текст'
 
     @admin.display()
     def review_pdf(self, obj):
@@ -187,11 +173,12 @@ class ReviewAdmin(admin.ModelAdmin):
     def approve_reviews(self, request, queryset):
         updated = queryset.update(status=models.Review.Status.APPROVED)
         self.message_user(request, f'{updated} рецензий одобрено', messages.SUCCESS)
-    approve_reviews.short_description = "Одобрить выбранные рецензии"
-    
+
     def reject_reviews(self, request, queryset):
         updated = queryset.update(status=models.Review.Status.NOT_APPROVED)
         self.message_user(request, f'{updated} рецензий отклонено', messages.SUCCESS)
-    reject_reviews.short_description = "Отклонить выбранные рецензии"
 
+    text_display.short_description = 'Текст'
     review_pdf.short_description = 'PDF со статусом'
+    approve_reviews.short_description = 'Одобрить выбранные рецензии'
+    reject_reviews.short_description = 'Отклонить выбранные рецензии'
