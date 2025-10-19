@@ -156,7 +156,7 @@ class Profession(models.Model):
         ACTOR = 'актер', 'актер'
         DIRECTOR = 'режиссер', 'режиссер'
 
-    name = models.CharField(max_length=200, verbose_name='Название', choices=Type.choices, default=Type.ACTOR)
+    name = models.CharField(max_length=200, verbose_name='Профессия', choices=Type.choices, default=Type.ACTOR)
     movie = models.ForeignKey('Movie', on_delete=models.PROTECT, verbose_name='Кино', related_name='professions')
     person = models.ForeignKey(
         'Person', on_delete=models.PROTECT, verbose_name='Личность', related_name='professions'
@@ -170,8 +170,8 @@ class Profession(models.Model):
         return f'person={self.person}, movie={self.movie}, name={self.name}'
 
     class Meta:
-        verbose_name = "Профессия"
-        verbose_name_plural = "Профессии"
+        verbose_name = "Роль"
+        verbose_name_plural = "Роли"
         ordering = ['name']
 
     def get_absolute_url(self):

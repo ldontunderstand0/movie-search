@@ -1,9 +1,12 @@
 from django.contrib.auth import login, logout
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models.functions import ExtractYear
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.http import HttpResponse
+from django.core.cache import cache
 from django.db.models import Prefetch
+from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.response import Response
@@ -93,6 +96,30 @@ class MovieViewSet(ModelViewSet):
     def get_queryset(self):
         qs = super().get_queryset()
         return querysets.annotate_movie_queryset(qs)
+
+    @action(detail=False, methods=['get'])
+    def filter(self, request):
+        cache_key = 'movie_available_filters'
+        cached_filters = cache.get(cache_key)
+
+        if not cached_filters:
+            years = (models.Movie.objects
+                     .annotate(year=ExtractYear('release_date'))
+                     .values_list('year', flat=True)
+                     .distinct().order_by('-year'))
+            genres = models.Genre.objects.values_list('name', flat=True)
+            countries = models.Country.objects.values_list('name', flat=True)
+            types = [choice[0] for choice in models.Movie.Type.choices]
+
+            cached_filters = {
+                'years': years,
+                'genres': genres,
+                'countries': countries,
+                'types': types,
+            }
+            cache.set(cache_key, cached_filters, 60 * 60)
+
+        return Response(cached_filters)
 
 
 class ReviewViewSet(ModelViewSet):
