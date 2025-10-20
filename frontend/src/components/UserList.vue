@@ -9,7 +9,7 @@ import { SearchFilter, RadioFilter, SelectFilter, OrderingFilter, ClearFilter } 
 const route = useRoute()
 const store = useResourceStore()
 
-store.setResource('movie', api.movie.list, api.movie.filter)
+store.setResource('user', api.user.list, api.user.filter)
 
 watch(
   () => route.query,
@@ -26,52 +26,36 @@ watch(
 
     <form method="get" class="movie-filter-form">
         <div class="filter-row">
-
-            <SearchFilter :search="store.currentParams.search ?? ''" placeholder="Название фильма..." />
-            <RadioFilter label="Тип" name="type" emptyLabel="Все" :currentFilter="store.currentParams.type ?? ''" :items="store.filter.types" />
-            <SelectFilter label="Год" name="year" emptyLabel="Все года" :currentFilter="store.currentParams.year ?? ''" :items="store.filter.years" />
-            <SelectFilter label="Жанр" name="genre" emptyLabel="Все жанры" :currentFilter="store.currentParams.genre ?? ''" :items="store.filter.genres" />
-            <SelectFilter label="Страна" name="country" emptyLabel="Все страны" :currentFilter="store.currentParams.country ?? ''" :items="store.filter.countries" />
+            <SearchFilter :search="store.currentParams.search ?? ''" placeholder="Логин пользователя..." />
             <OrderingFilter :currentFilter="store.currentParams.sort ?? ''" :items="store.filter.sort" />
             <ClearFilter />
-
         </div>
     </form>
 
-    <h1 class="page-title">Фильмы</h1>
+    <h1 class="page-title">Пользователи</h1>
     <div v-if="store.loading">Загрузка...</div>
     <div v-else-if="store.error" class="error">{{ store.error }}</div>
 
     <div v-else class="pagination-info">
         Показано <span class="current-count">{{ store.shownItems }}</span> из
-        <span class="total-count">{{ store.count }}</span> фильмов
+        <span class="total-count">{{ store.count }}</span> пользователей
     </div>
  
     <ol class="movie-list">
-        <li v-for="(movie, index) in store.items" :key="movie.id" class="movie-item">
+        <li v-for="(user, index) in store.items" :key="user.id" class="movie-item">
         <div class="movie-number">
             {{ (store.currentPage - 1) * 10 + index + 1 }}
         </div>
-        <div v-if="movie.poster" class="movie-poster">
-            <a :href="movie.id">
-                <img class="poster-image" :src="movie.poster">
-            </a>
-        </div>
-        <div v-else class="movie-list">
-            <div class="no-poster">
-                <span class="no-poster-text">Нет постера</span>
-            </div>
-        </div>
         <div class="movie-info">
-            <a class="movie-title-link" :href="movie.id">
-                <span class="movie-title">{{ movie.title }}</span>
-            </a>
-            <a class="movie-year-link" :href="movie.id">
-                <span class="movie-year">{{ movie.release_year }}</span>
-            </a>
-            <a class="movie-rate-link" :href="movie.id">
-                <span v-if="movie.rate" class="movie-rate">★ {{ movie.rate }}</span>
-                <span v-else class="movie-rate">★ 0.0</span>
+            <a class="movie-title-link" :href="user.id">
+                <table>
+                    <tr>
+                        <th><span class="movie-title">{{ user.username }}</span></th>
+                        <th><span class="movie-year">Просмотрено фильмов: {{ user.watches }}</span></th>
+                        <th><span class="movie-year">Оценено фильмов: {{ user.rates }}</span></th>
+                        <th><span class="movie-year">Рецензий написано: {{ user.reviews }}</span></th>
+                    </tr>
+                </table>
             </a>
         </div>
         </li>
@@ -84,6 +68,10 @@ watch(
 
 
 <style scoped>
+table {
+  width: 100%;
+  /* другие стили для таблицы */
+}
 .movie-list-container {
     max-width: 1200px;
     margin-left: 12%;
@@ -196,6 +184,7 @@ watch(
 
 .movie-title-link {
     text-decoration: none;
+    padding-left: 5%;
 }
 
 .movie-title {

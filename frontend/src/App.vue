@@ -17,10 +17,13 @@
                         <router-link class="nav-link" to="/movie/">Фильмы</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/">Личности</router-link>
+                        <router-link class="nav-link" to="/person/">Личности</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/">Жанры</router-link>
+                        <router-link class="nav-link" to="/genre/">Жанры</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/country/">Страны</router-link>
                     </li>
                 </ul>
 

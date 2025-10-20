@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
 export const useResourceStore = defineStore('resource', () => {
+  const name = ref(null)
   const items = ref([])
   const count = ref(0)
   const next = ref(null)
@@ -49,7 +50,8 @@ export const useResourceStore = defineStore('resource', () => {
 
   const filter = ref({})
 
-  const setResource = (api, filter) => {
+  const setResource = (resourceName, api, filter = null) => {
+    name.value = resourceName
     apiFunc.value = api
     apiFilter.value = filter
   }
@@ -74,9 +76,16 @@ export const useResourceStore = defineStore('resource', () => {
       return
     }
 
-    if (!apiFilter.value) {
-      console.error('Filter для ресурса не установлен!')
-      return
+    if (apiFilter.value) {
+      try {
+      const { data } = await apiFilter.value()
+      filter.value = data
+    } catch (err) {
+      console.error(err)
+      error.value = 'Ошибка при загрузке filter'
+    } finally {
+      loading.value = false
+    }
     }
 
     loading.value = true
@@ -91,16 +100,6 @@ export const useResourceStore = defineStore('resource', () => {
     } catch (err) {
       console.error(err)
       error.value = 'Ошибка при загрузке данных'
-    } finally {
-      loading.value = false
-    }
-
-    try {
-      const { data } = await apiFilter.value()
-      filter.value = data
-    } catch (err) {
-      console.error(err)
-      error.value = 'Ошибка при загрузке filter'
     } finally {
       loading.value = false
     }

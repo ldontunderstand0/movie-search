@@ -1,11 +1,12 @@
 from django.contrib.auth.password_validation import validate_password
+from django.db.models import F
 from rest_framework.serializers import (
     ModelSerializer,
     CharField,
     ValidationError,
     SerializerMethodField,
 )
-
+from random import choice
 from utils.serializers import BaseModelSerializer
 from catalog import models
 
@@ -95,10 +96,24 @@ class GenreSerializer(ModelSerializer):
 
 class GenreListSerializer(GenreSerializer):
     movies_count = SerializerMethodField()
+    random_poster = SerializerMethodField()
 
     @staticmethod
     def get_movies_count(obj):
         return obj.movies.count()
+
+    def get_random_poster(self, obj):
+        movies = obj.movies.exclude(poster='')
+        posters = [movie.poster for movie in movies if movie.poster]
+        if not posters:
+            return None
+        poster = choice(posters)
+
+        # Формируем полный URL
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(poster.url)
+        return poster.url
 
 
 class CountrySerializer(ModelSerializer):
@@ -109,10 +124,24 @@ class CountrySerializer(ModelSerializer):
 
 class CountryListSerializer(CountrySerializer):
     movies_count = SerializerMethodField()
+    random_poster = SerializerMethodField()
 
     @staticmethod
     def get_movies_count(obj):
         return obj.movies.count()
+
+    def get_random_poster(self, obj):
+        movies = obj.movies.exclude(poster='')
+        posters = [movie.poster for movie in movies if movie.poster]
+        if not posters:
+            return None
+        poster = choice(posters)
+
+        # Формируем полный URL
+        request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(poster.url)
+        return poster.url
 
 
 class RatingSerializer(BaseModelSerializer):

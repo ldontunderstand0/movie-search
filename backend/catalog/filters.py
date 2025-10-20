@@ -8,6 +8,7 @@ class UserFilter(filters.FilterSet):
     search = filters.CharFilter(field_name='username', lookup_expr='contains')
     sort = filters.OrderingFilter(
         fields=(
+            ('username', 'username'),
             ('_watches', 'watches'),
             ('_rates', 'rates'),
             ('_reviews', 'reviews'),
@@ -62,6 +63,13 @@ class PersonFilter(filters.FilterSet):
 
     search = filters.CharFilter(field_name='full_name', lookup_expr='iregex')
 
+    sort = filters.OrderingFilter(
+        fields=[
+            ('full_name', 'full_name'),
+            ('birth_date', 'birth_date'),
+        ]
+    )
+
     class Meta:
         model = models.Person
         fields = ['search']
@@ -97,6 +105,8 @@ class ReviewFilter(filters.FilterSet):
 
 class RatingFilter(filters.FilterSet):
 
+    rate = filters.ChoiceFilter(choices=models.Rating.Rate.choices)
+
     movie = filters.ModelChoiceFilter(
         queryset=models.Movie.objects,
         field_name='movie',
@@ -118,7 +128,7 @@ class RatingFilter(filters.FilterSet):
 
     class Meta:
         model = models.Rating
-        fields = ['movie', 'user', 'sort']
+        fields = ['rate', 'movie', 'user', 'sort']
 
 
 class ProfessionFilter(filters.FilterSet):

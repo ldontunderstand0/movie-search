@@ -9,7 +9,7 @@ import { SearchFilter, RadioFilter, SelectFilter, OrderingFilter, ClearFilter } 
 const route = useRoute()
 const store = useResourceStore()
 
-store.setResource('movie', api.movie.list, api.movie.filter)
+store.setResource('movie', api.profession.list, api.profession.filter)
 
 watch(
   () => route.query,
@@ -38,7 +38,7 @@ watch(
         </div>
     </form>
 
-    <h1 class="page-title">Фильмы</h1>
+    <h1 class="page-title">Роли</h1>
     <div v-if="store.loading">Загрузка...</div>
     <div v-else-if="store.error" class="error">{{ store.error }}</div>
 
@@ -52,26 +52,13 @@ watch(
         <div class="movie-number">
             {{ (store.currentPage - 1) * 10 + index + 1 }}
         </div>
-        <div v-if="movie.poster" class="movie-poster">
-            <a :href="movie.id">
-                <img class="poster-image" :src="movie.poster">
-            </a>
-        </div>
-        <div v-else class="movie-list">
-            <div class="no-poster">
-                <span class="no-poster-text">Нет постера</span>
-            </div>
-        </div>
         <div class="movie-info">
             <a class="movie-title-link" :href="movie.id">
-                <span class="movie-title">{{ movie.title }}</span>
+                <span class="movie-title">{{ movie.name }}</span>
             </a>
             <a class="movie-year-link" :href="movie.id">
-                <span class="movie-year">{{ movie.release_year }}</span>
-            </a>
-            <a class="movie-rate-link" :href="movie.id">
-                <span v-if="movie.rate" class="movie-rate">★ {{ movie.rate }}</span>
-                <span v-else class="movie-rate">★ 0.0</span>
+                <span class="movie-year">{{ movie.movie }}</span> - 
+                <span class="movie-year">{{ movie.person }}</span>
             </a>
         </div>
         </li>
@@ -188,6 +175,7 @@ watch(
 
 /* Информация о фильме */
 .movie-info {
+    margin-left: 5%;
     flex: 1;
     display: flex;
     flex-direction: column;

@@ -82,6 +82,31 @@ class UserViewSet(ModelViewSet):
             return serializers.UserListSerializer
         return serializers.UserSerializer
 
+    @action(detail=False, methods=['get'])
+    def filter(self, request):
+        cache_key = 'user_available_filters'
+        cached_filters = cache.get(cache_key)
+
+        if not cached_filters:
+            sort = [
+                {'label': 'По логину (A-Z)', 'filter': 'username'},
+                {'label': 'По логину (Z-A)', 'filter': '-username'},
+                {'label': 'Меньше всего рецензий', 'filter': '-reviews'},
+                {'label': 'Больше всего просмотров', 'filter': 'watches'},
+                {'label': 'Меньше всего просмотров', 'filter': '-watches'},
+                {'label': 'Больше всего оценок', 'filter': 'rates'},
+                {'label': 'Меньше всего оценок', 'filter': '-rates'},
+                {'label': 'Больше всего рецензий', 'filter': 'reviews'},
+                {'label': 'Меньше всего рецензий', 'filter': '-reviews'},
+            ]
+
+            cached_filters = {
+                'sort': sort,
+            }
+            cache.set(cache_key, cached_filters, 60 * 60)
+
+        return Response(cached_filters)
+
 
 class MovieViewSet(ModelViewSet):
     permission_classes = [permissions.IsAdminUserOrReadOnly]
@@ -111,11 +136,21 @@ class MovieViewSet(ModelViewSet):
             countries = models.Country.objects.values_list('name', flat=True)
             types = [choice[0] for choice in models.Movie.Type.choices]
 
+            sort = [
+                {'label': 'Рейтинг (высокий → низкий)', 'filter': '-rate'},
+                {'label': 'Рейтинг (низкий → высокий)', 'filter': 'rate'},
+                {'label': 'Новые сначала', 'filter': '-release_date',},
+                {'label': 'Старые сначала', 'filter': 'release_date'},
+                {'label': 'Название (А-Я)', 'filter': 'title'},
+                {'label': 'Название (Я-А)', 'filter': '-title'}
+            ]
+
             cached_filters = {
                 'years': years,
                 'genres': genres,
                 'countries': countries,
                 'types': types,
+                'sort': sort,
             }
             cache.set(cache_key, cached_filters, 60 * 60)
 
@@ -132,6 +167,33 @@ class ReviewViewSet(ModelViewSet):
             return [permissions.IsCreatorOrAdminOrReadOnly()]
         return [IsAuthenticatedOrReadOnly()]
 
+    @action(detail=False, methods=['get'])
+    def filter(self, request):
+        cache_key = 'review_available_filters'
+        cached_filters = cache.get(cache_key)
+
+        if not cached_filters:
+            movies = models.Movie.objects.values_list('id', flat=True)
+            users = models.Country.objects.values_list('id', flat=True)
+            types = [choice[0] for choice in models.Review.Type.choices]
+
+            sort = [
+                {'label': 'Самые новые по написанию', 'filter': 'created_at'},
+                {'label': 'Самые старые по написанию', 'filter': '-created_at'},
+                {'label': 'Самые новые по обновлению', 'filter': 'updated_at'},
+                {'label': 'Самые старые по обновлению', 'filter': '-updated_at'},
+            ]
+
+            cached_filters = {
+                'movies': movies,
+                'users': users,
+                'types': types,
+                'sort': sort,
+            }
+            cache.set(cache_key, cached_filters, 60 * 60)
+
+        return Response(cached_filters)
+
 
 class RatingViewSet(ModelViewSet):
     queryset = models.Rating.objects.select_related('user', 'movie').all()
@@ -142,6 +204,33 @@ class RatingViewSet(ModelViewSet):
         if self.action in ['update', 'partial_update', 'destroy']:
             return [permissions.IsCreatorOrAdminOrReadOnly()]
         return [IsAuthenticatedOrReadOnly()]
+
+    @action(detail=False, methods=['get'])
+    def filter(self, request):
+        cache_key = 'review_available_filters'
+        cached_filters = cache.get(cache_key)
+
+        if not cached_filters:
+            movies = models.Movie.objects.values_list('id', flat=True)
+            users = models.Country.objects.values_list('id', flat=True)
+            rates = [choice[0] for choice in models.Rating.Rate.choices]
+
+            sort = [
+                {'label': 'Самые новые по написанию', 'filter': 'created_at'},
+                {'label': 'Самые старые по написанию', 'filter': '-created_at'},
+                {'label': 'Самые новые по обновлению', 'filter': 'updated_at'},
+                {'label': 'Самые старые по обновлению', 'filter': '-updated_at'},
+            ]
+
+            cached_filters = {
+                'movies': movies,
+                'users': users,
+                'rates': rates,
+                'sort': sort,
+            }
+            cache.set(cache_key, cached_filters, 60 * 60)
+
+        return Response(cached_filters)
 
 
 class PersonViewSet(ModelViewSet):
@@ -161,7 +250,7 @@ class PersonViewSet(ModelViewSet):
 
 
 class ProfessionViewSet(ModelViewSet):
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
     serializer_class = serializers.ProfessionSerializer
     queryset = models.Profession.objects.select_related('person', 'movie').all()
     filterset_class = filters.ProfessionFilter

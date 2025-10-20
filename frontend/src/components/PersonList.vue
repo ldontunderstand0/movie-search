@@ -4,20 +4,20 @@ import { useRoute } from 'vue-router'
 import { useResourceStore } from '@/stores/resourceStore'
 import api from '@/services/api'
 import Pagination from '@/components/Pagination.vue'
-import { SearchFilter, RadioFilter, SelectFilter, OrderingFilter, ClearFilter } from '@/components/filters'
+import { SearchFilter, ClearFilter } from '@/components/filters'
 
 const route = useRoute()
 const store = useResourceStore()
 
-store.setResource('movie', api.movie.list, api.movie.filter)
+store.setResource('person', api.person.list, api.person.filter)
 
 watch(
-  () => route.query,
+  () => route.query,   // следим за query в URL
   (newQuery) => {
-    store.loadItems(newQuery)
+    store.loadItems(newQuery)              // вызываем Pinia action
     window.scrollTo({ top: 0, behavior: 'smooth' })
   },
-  { immediate: true }
+  { immediate: true }  // вызываем сразу при монтировании
 )
 </script>
 
@@ -27,63 +27,53 @@ watch(
     <form method="get" class="movie-filter-form">
         <div class="filter-row">
 
-            <SearchFilter :search="store.currentParams.search ?? ''" placeholder="Название фильма..." />
-            <RadioFilter label="Тип" name="type" emptyLabel="Все" :currentFilter="store.currentParams.type ?? ''" :items="store.filter.types" />
-            <SelectFilter label="Год" name="year" emptyLabel="Все года" :currentFilter="store.currentParams.year ?? ''" :items="store.filter.years" />
-            <SelectFilter label="Жанр" name="genre" emptyLabel="Все жанры" :currentFilter="store.currentParams.genre ?? ''" :items="store.filter.genres" />
-            <SelectFilter label="Страна" name="country" emptyLabel="Все страны" :currentFilter="store.currentParams.country ?? ''" :items="store.filter.countries" />
-            <OrderingFilter :currentFilter="store.currentParams.sort ?? ''" :items="store.filter.sort" />
+            <SearchFilter :search="store.currentParams.search ?? ''" placeholder="Имя или фамилия..." />
             <ClearFilter />
 
         </div>
     </form>
 
-    <h1 class="page-title">Фильмы</h1>
+    <h1 class="page-title">Личности</h1>
     <div v-if="store.loading">Загрузка...</div>
     <div v-else-if="store.error" class="error">{{ store.error }}</div>
 
-    <div v-else class="pagination-info">
+    <div class="pagination-info">
         Показано <span class="current-count">{{ store.shownItems }}</span> из
-        <span class="total-count">{{ store.count }}</span> фильмов
+        <span class="total-count">{{ store.count }}</span> личностей
     </div>
  
     <ol class="movie-list">
-        <li v-for="(movie, index) in store.items" :key="movie.id" class="movie-item">
+        <li v-for="(person, index) in store.items" :key="person.id" class="movie-item">
         <div class="movie-number">
             {{ (store.currentPage - 1) * 10 + index + 1 }}
         </div>
-        <div v-if="movie.poster" class="movie-poster">
-            <a :href="movie.id">
-                <img class="poster-image" :src="movie.poster">
-            </a>
-        </div>
-        <div v-else class="movie-list">
-            <div class="no-poster">
-                <span class="no-poster-text">Нет постера</span>
-            </div>
+        <div class="movie-list">
         </div>
         <div class="movie-info">
-            <a class="movie-title-link" :href="movie.id">
-                <span class="movie-title">{{ movie.title }}</span>
+            <a class="movie-title-link" :href="person.id">
+                <span class="movie-title">{{ person.full_name }}</span>
             </a>
-            <a class="movie-year-link" :href="movie.id">
-                <span class="movie-year">{{ movie.release_year }}</span>
+            <a class="movie-year-link" :href="person.id">
+                <span class="movie-year">{{ person.sex }}</span>
             </a>
-            <a class="movie-rate-link" :href="movie.id">
-                <span v-if="movie.rate" class="movie-rate">★ {{ movie.rate }}</span>
-                <span v-else class="movie-rate">★ 0.0</span>
+            <a class="movie-year-link" :href="person.id">
+                <span class="movie-year">{{ person.birth_date }}</span>
             </a>
         </div>
         </li>
     </ol>
 
     <Pagination :store="store" />
-    
   </div>
 </template>
 
 
 <style scoped>
+.disabled {
+  color: gray;
+  pointer-events: none;
+  cursor: not-allowed;
+}
 .movie-list-container {
     max-width: 1200px;
     margin-left: 12%;
@@ -105,6 +95,66 @@ watch(
     flex-wrap: wrap;
     gap: 15px;
     align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+.filter-label-text {
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+
+/* Селекты */
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+    min-width: 120px;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #ff8a00;
+}
+
+/* Радио кнопки */
+.filter-radio-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.filter-radio-label:hover {
+    background-color: #f0f0f0;
+}
+
+.filter-radio {
+    margin: 0;
+}
+
+.filter-radio-text {
+    font-size: 14px;
+    color: #666;
+}
+
+.filter-radio:checked + .filter-radio-text {
+    color: #ff8a00;
+    font-weight: 500;
 }
 
 .page-title {
@@ -183,11 +233,13 @@ watch(
 }
 
 .no-poster-text {
+        padding-left: 5%;
     text-align: center;
 }
 
 /* Информация о фильме */
 .movie-info {
+    padding-left: 5%;
     flex: 1;
     display: flex;
     flex-direction: column;
