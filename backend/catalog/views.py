@@ -13,9 +13,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import CreateAPIView
-import weasyprint
+#import weasyprint
 from urllib.parse import quote
 from utils import querysets
+from utils.serializers import get_sort_dict
 from catalog import models, serializers, filters, permissions
 
 
@@ -27,7 +28,7 @@ def admin_review_pdf(request, review_id):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f"filename*=UTF-8''{quote(filename)}"
     # response['Content-Disposition'] = f"attachment; filename*=UTF-8''{quote(filename)}"
-    weasyprint.HTML(string=html).write_pdf(response)
+    #weasyprint.HTML(string=html).write_pdf(response)
     return response
 
 
@@ -88,17 +89,17 @@ class UserViewSet(ModelViewSet):
         cached_filters = cache.get(cache_key)
 
         if not cached_filters:
-            sort = [
-                {'label': 'По логину (A-Z)', 'filter': 'username'},
-                {'label': 'По логину (Z-A)', 'filter': '-username'},
-                {'label': 'Меньше всего рецензий', 'filter': '-reviews'},
-                {'label': 'Больше всего просмотров', 'filter': 'watches'},
-                {'label': 'Меньше всего просмотров', 'filter': '-watches'},
-                {'label': 'Больше всего оценок', 'filter': 'rates'},
-                {'label': 'Меньше всего оценок', 'filter': '-rates'},
-                {'label': 'Больше всего рецензий', 'filter': 'reviews'},
-                {'label': 'Меньше всего рецензий', 'filter': '-reviews'},
-            ]
+            sort = get_sort_dict([
+                ('По логину (A-Z)', 'username'),
+                ('По логину (Z-A)', '-username'),
+                ('Меньше всего рецензий', '-reviews'),
+                ('Больше всего просмотров', 'watches'),
+                ('Меньше всего просмотров', '-watches'),
+                ('Больше всего оценок', 'rates'),
+                ('Меньше всего оценок', '-rates'),
+                ('Больше всего рецензий', 'reviews'),
+                ('Меньше всего рецензий', '-reviews'),
+            ])
 
             cached_filters = {
                 'sort': sort,
@@ -136,14 +137,14 @@ class MovieViewSet(ModelViewSet):
             countries = models.Country.objects.values_list('name', flat=True)
             types = [choice[0] for choice in models.Movie.Type.choices]
 
-            sort = [
-                {'label': 'Рейтинг (высокий → низкий)', 'filter': '-rate'},
-                {'label': 'Рейтинг (низкий → высокий)', 'filter': 'rate'},
-                {'label': 'Новые сначала', 'filter': '-release_date',},
-                {'label': 'Старые сначала', 'filter': 'release_date'},
-                {'label': 'Название (А-Я)', 'filter': 'title'},
-                {'label': 'Название (Я-А)', 'filter': '-title'}
-            ]
+            sort = get_sort_dict([
+                ('Рейтинг (высокий → низкий)', '-rate'),
+                ('Рейтинг (низкий → высокий)', 'rate'),
+                ('Новые сначала', '-release_date'),
+                ('Старые сначала', 'release_date'),
+                ('Название (А-Я)', 'title'),
+                ('Название (Я-А)', '-title')
+            ])
 
             cached_filters = {
                 'years': years,
@@ -167,26 +168,27 @@ class ReviewViewSet(ModelViewSet):
             return [permissions.IsCreatorOrAdminOrReadOnly()]
         return [IsAuthenticatedOrReadOnly()]
 
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializers.ReviewListSerializer
+        return serializers.ReviewSerializer
+
     @action(detail=False, methods=['get'])
     def filter(self, request):
         cache_key = 'review_available_filters'
         cached_filters = cache.get(cache_key)
 
         if not cached_filters:
-            movies = models.Movie.objects.values_list('id', flat=True)
-            users = models.Country.objects.values_list('id', flat=True)
             types = [choice[0] for choice in models.Review.Type.choices]
 
-            sort = [
-                {'label': 'Самые новые по написанию', 'filter': 'created_at'},
-                {'label': 'Самые старые по написанию', 'filter': '-created_at'},
-                {'label': 'Самые новые по обновлению', 'filter': 'updated_at'},
-                {'label': 'Самые старые по обновлению', 'filter': '-updated_at'},
-            ]
+            sort = get_sort_dict([
+                ('Самые новые по написанию', 'created_at'),
+                ('Самые старые по написанию', '-created_at'),
+                ('Самые новые по обновлению', 'updated_at'),
+                ('Самые старые по обновлению', '-updated_at'),
+            ])
 
             cached_filters = {
-                'movies': movies,
-                'users': users,
                 'types': types,
                 'sort': sort,
             }
@@ -197,7 +199,6 @@ class ReviewViewSet(ModelViewSet):
 
 class RatingViewSet(ModelViewSet):
     queryset = models.Rating.objects.select_related('user', 'movie').all()
-    serializer_class = serializers.RatingSerializer
     filterset_class = filters.RatingFilter
 
     def get_permissions(self):
@@ -205,26 +206,27 @@ class RatingViewSet(ModelViewSet):
             return [permissions.IsCreatorOrAdminOrReadOnly()]
         return [IsAuthenticatedOrReadOnly()]
 
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializers.RatingListSerializer
+        return serializers.RatingSerializer
+
     @action(detail=False, methods=['get'])
     def filter(self, request):
         cache_key = 'review_available_filters'
         cached_filters = cache.get(cache_key)
 
         if not cached_filters:
-            movies = models.Movie.objects.values_list('id', flat=True)
-            users = models.Country.objects.values_list('id', flat=True)
             rates = [choice[0] for choice in models.Rating.Rate.choices]
 
-            sort = [
-                {'label': 'Самые новые по написанию', 'filter': 'created_at'},
-                {'label': 'Самые старые по написанию', 'filter': '-created_at'},
-                {'label': 'Самые новые по обновлению', 'filter': 'updated_at'},
-                {'label': 'Самые старые по обновлению', 'filter': '-updated_at'},
-            ]
+            sort = get_sort_dict([
+                ('Самые новые по написанию', 'created_at'),
+                ('Самые старые по написанию', '-created_at'),
+                ('Самые новые по обновлению', 'updated_at'),
+                ('Самые старые по обновлению', '-updated_at'),
+            ])
 
             cached_filters = {
-                'movies': movies,
-                'users': users,
                 'rates': rates,
                 'sort': sort,
             }
@@ -248,12 +250,39 @@ class PersonViewSet(ModelViewSet):
             return serializers.PersonDetailSerializer
         return serializers.PersonListSerializer
 
+    @action(detail=False, methods=['get'])
+    def filter(self, request):
+        cache_key = 'review_available_filters'
+        cached_filters = cache.get(cache_key)
+
+        if not cached_filters:
+            sex = [choice[0] for choice in models.Person.Type.choices]
+
+            sort = get_sort_dict([
+                ('По именам (А - Я)', 'full_name'),
+                ('По именам (Я - А)', '-full_name'),
+                ('Возраст (от большего к меньшему)', 'birth_date'),
+                ('Возраст (от меньшего к большему)', '-birth_date'),
+            ])
+
+            cached_filters = {
+                'sex': sex,
+                'sort': sort,
+            }
+            cache.set(cache_key, cached_filters, 60 * 60)
+
+        return Response(cached_filters)
+
 
 class ProfessionViewSet(ModelViewSet):
     # permission_classes = [IsAdminUser]
-    serializer_class = serializers.ProfessionSerializer
     queryset = models.Profession.objects.select_related('person', 'movie').all()
     filterset_class = filters.ProfessionFilter
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializers.ProfessionListSerializer
+        return serializers.ProfessionSerializer
 
 
 class GenreViewSet(ModelViewSet):

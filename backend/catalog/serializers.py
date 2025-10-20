@@ -7,7 +7,8 @@ from rest_framework.serializers import (
     SerializerMethodField,
 )
 from random import choice
-from utils.serializers import BaseModelSerializer
+from utils.serializers import BaseModelSerializer, get_fields
+from utils.querysets import annotate_movie_queryset
 from catalog import models
 
 
@@ -186,7 +187,7 @@ class MovieInfoSerializer(MovieSerializer):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             rating = obj.ratings.filter(user=request.user)
-            return rating.values('id', 'rate', 'is_watched') if rating.exists() else None
+            return rating.values('id', 'rate', 'is_watched')[0] if rating.exists() else None
         return None
 
 
@@ -231,14 +232,33 @@ class MovieDetailSerializer(MovieInfoSerializer):
         return directors.select_related('person').values('person__id', 'person__full_name')
 
 
+class ProfessionListSerializer(ProfessionSerializer):
+    movie = SerializerMethodField()
+    person = SerializerMethodField()
+
+    @staticmethod
+    def get_movie(obj):
+        return get_fields(obj.movie, 'id', 'title')
+
+    @staticmethod
+    def get_person(obj):
+        return get_fields(obj.person, 'id', 'full_name')
+
+
 class ProfessionDetailSerializer(ProfessionSerializer):
     movie = MovieListSerializer(read_only=True, exclude_fields=['user_actions'])
 
 
 class PersonListSerializer(PersonSerializer):
+    top_5_movies = SerializerMethodField()
+
     class Meta(PersonSerializer.Meta):
         exclude = PersonSerializer.Meta.exclude + ['movies']
         extra_kwargs = {'biography': {'write_only': True}}
+
+    @staticmethod
+    def get_top_5_movies(obj):
+        return annotate_movie_queryset(obj.movies.all()).values_list('title', flat=True)[:5]
 
 
 class PersonDetailSerializer(PersonSerializer):
@@ -251,3 +271,29 @@ class PersonDetailSerializer(PersonSerializer):
 
     class Meta(PersonSerializer.Meta):
         exclude = PersonSerializer.Meta.exclude + ['movies']
+
+
+class RatingListSerializer(RatingSerializer):
+    movie = SerializerMethodField()
+    user = SerializerMethodField()
+
+    @staticmethod
+    def get_movie(obj):
+        return get_fields(obj.movie, 'id', 'title')
+
+    @staticmethod
+    def get_user(obj):
+        return get_fields(obj.user, 'id', 'username')
+
+
+class ReviewListSerializer(ReviewSerializer):
+    movie = SerializerMethodField()
+    user = SerializerMethodField()
+
+    @staticmethod
+    def get_movie(obj):
+        return get_fields(obj.movie, 'id', 'title')
+
+    @staticmethod
+    def get_user(obj):
+        return get_fields(obj.user, 'id', 'username')

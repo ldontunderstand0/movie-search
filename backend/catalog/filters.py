@@ -20,7 +20,6 @@ class UserFilter(filters.FilterSet):
         fields = ['search', 'sort']
 
 
-
 class MovieFilter(filters.FilterSet):
 
     search = filters.CharFilter(field_name='title', lookup_expr='iregex')
@@ -63,6 +62,13 @@ class PersonFilter(filters.FilterSet):
 
     search = filters.CharFilter(field_name='full_name', lookup_expr='iregex')
 
+    sex = filters.ChoiceFilter(choices=models.Person.Type.choices)
+    movie = filters.ModelChoiceFilter(
+        queryset=models.Movie.objects,
+        field_name='movies',
+        to_field_name='id'
+    )
+
     sort = filters.OrderingFilter(
         fields=[
             ('full_name', 'full_name'),
@@ -72,7 +78,7 @@ class PersonFilter(filters.FilterSet):
 
     class Meta:
         model = models.Person
-        fields = ['search']
+        fields = ['movie', 'sex', 'search', 'sort']
 
 
 class ReviewFilter(filters.FilterSet):

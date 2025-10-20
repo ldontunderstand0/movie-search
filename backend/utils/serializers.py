@@ -17,3 +17,11 @@ class BaseModelSerializer(serializers.ModelSerializer):
         if exclude_fields:
             for field_name in exclude_fields:
                 self.fields.pop(field_name)
+
+
+def get_fields(obj, *field_names):
+    return {field: getattr(obj, field) for field in field_names}
+
+
+def get_sort_dict(arr: list):
+    return [{'label': l, 'filter': f} for l, f in arr]
