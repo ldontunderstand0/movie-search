@@ -1,5 +1,6 @@
 from django.contrib.auth.password_validation import validate_password
 from django.db.models import F
+from rest_framework.authtoken.models import Token
 from rest_framework.serializers import (
     ModelSerializer,
     CharField,
@@ -48,6 +49,9 @@ class SignUpSerializer(UserSerializer):
 
         instance.set_password(password)
         instance.save()
+
+        user = models.User(username=validated_data['username'], email=validated_data['email'])
+        Token.objects.create(user=user)
         return instance
 
 
@@ -161,15 +165,27 @@ class ReviewSerializer(ModelSerializer):
 class MovieSerializer(BaseModelSerializer):
     class Meta:
         model = models.Movie
-        fields = ['id', 'type', 'title', 'release_date', 'description', 'genres', 'countries', 'poster']
+        fields = ['id', 'type', 'title', 'release_date', 'description', 'genres', 'countries', 'poster', 'trailer_url']
 
-    def validate(self, attrs):
-        title = attrs['title']
-        release_date = attrs['release_date']
+    def create(self, validated_data):
+        title = validated_data['title']
+        release_date = validated_data['release_date']
+
         movie = models.Movie.objects.filter(title=title, release_date=release_date)
         if movie.exists():
             raise ValidationError('Movie already exists.')
-        return attrs
+
+        genres = validated_data.pop('genres', [])
+        countries = validated_data.pop('countries', [])
+
+        instance = self.Meta.model(**validated_data)
+        instance.save()
+
+        if genres:
+            instance.genres.set(genres)
+        if countries:
+            instance.countries.set(countries)
+        return instance
 
 
 class MovieInfoSerializer(MovieSerializer):
@@ -177,7 +193,7 @@ class MovieInfoSerializer(MovieSerializer):
     user_actions = SerializerMethodField()
 
     class Meta(MovieSerializer.Meta):
-        fields = MovieSerializer.Meta.fields + ['rate', 'user_actions']
+        fields = MovieSerializer.Meta.fields[:-1] + ['rate', 'user_actions']
 
     @staticmethod
     def get_rate(obj):

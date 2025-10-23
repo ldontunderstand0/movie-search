@@ -21,6 +21,8 @@ urlpatterns = [
     path('login/', views.LoginView.as_view()),
     path('logout/', views.LogoutView.as_view()),
 
+    path('me/', views.me),
+
     path('admin/review/<int:review_id>/pdf/', views.admin_review_pdf, name='admin_review_pdf'),
 ] + router.urls
 

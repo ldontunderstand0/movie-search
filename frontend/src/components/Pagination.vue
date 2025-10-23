@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-<div class="pagination-container">
+<div v-if="store.count" class="pagination-container">
     <nav class="pagination-nav">
         <ul class="pagination-list">
                 <li class="pagination-item">

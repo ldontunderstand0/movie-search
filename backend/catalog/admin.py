@@ -68,7 +68,9 @@ class MovieAdmin(admin.ModelAdmin):
 
     @admin.display()
     def description_display(self, obj):
-        return obj.description[:30] + '...' if len(obj.description) > 30 else obj
+        if obj.description:
+            return obj.description[:30] + '...' if len(obj.description) > 30 else obj
+        return ''
 
     @admin.display()
     def display_genres(self, obj):
@@ -97,12 +99,13 @@ class MovieAdmin(admin.ModelAdmin):
 
 @admin.register(models.Person)
 class PersonAdmin(admin.ModelAdmin):
-    list_display = ['full_name', 'birth_date', 'sex', 'display_biography', 'display_movies']
+    list_display = ['full_name', 'birth_date', 'sex', 'display_biography', 'display_movies', 'photo_preview']
     list_filter = ['sex']
     inlines = [ProfessionInline]
     date_hierarchy = 'birth_date'
     list_display_links = ['full_name']
     search_fields = ['full_name']
+    readonly_fields = ('photo_detail_preview',)
 
     @admin.display()
     def display_movies(self, obj):
@@ -116,8 +119,20 @@ class PersonAdmin(admin.ModelAdmin):
                 return content[:100] + "…" if len(content) > 100 else content
         return "Нет биографии"
 
+    @admin.display()
+    def photo_preview(self, obj):
+        return mark_safe(f'<img src="{obj.photo.url}" width="40" />') if obj.photo else 'Нет фото'
+
+    @admin.display()
+    def photo_detail_preview(self, obj):
+        return mark_safe(f'<img src="{obj.photo.url}" width="200" />') if obj.photo else "Нет фото"
+
     display_movies.short_description = 'Фильмы'
     display_biography.short_description = 'Биография'
+    photo_preview.allow_tags = True
+    photo_preview.short_description = 'Превью фото'
+    photo_detail_preview.allow_tags = True
+    photo_detail_preview.short_description = 'Текущее фото'
 
 
 @admin.register(models.Profession)

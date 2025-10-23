@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 
 export const useResourceStore = defineStore('resource', () => {
+  const user = ref(null)
   const name = ref(null)
   const items = ref([])
   const count = ref(0)
@@ -71,6 +73,10 @@ export const useResourceStore = defineStore('resource', () => {
   }
 
   const loadItems = async (params = {}) => {
+    const auth = useAuthStore()
+    await auth.fetchUser()
+    user.value = auth.user
+
     if (!apiFunc.value) {
       console.error('API для ресурса не установлен!')
       return
@@ -106,6 +112,7 @@ export const useResourceStore = defineStore('resource', () => {
   }
 
   return {
+    user,
     items,
     count,
     previous,

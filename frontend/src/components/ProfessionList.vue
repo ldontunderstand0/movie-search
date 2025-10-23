@@ -5,6 +5,7 @@ import { useResourceStore } from '@/stores/resourceStore'
 import api from '@/services/api'
 import Pagination from '@/components/Pagination.vue'
 import { SearchFilter, RadioFilter, SelectFilter, OrderingFilter, ClearFilter } from '@/components/filters'
+import MovieNav from './movie/MovieNav.vue'
 
 const route = useRoute()
 const store = useResourceStore()
@@ -22,49 +23,49 @@ watch(
 </script>
 
 <template>
-  <div class="movie-list-container">
+<div v-if="store.loading">Загрузка...</div>
+<div v-else-if="store.error" class="error">{{ store.error }}</div>
+<div v-else class="movie-list-container">
 
-    <form method="get" class="movie-filter-form">
+    <MovieNav v-if="store.currentParams.movie && store.currentParams.name === 'актер'" :movie_id="store.currentParams.movie" active="actors"/>
+    <MovieNav v-else-if="store.currentParams.movie && store.currentParams.name === 'режиссер'" :movie_id="store.currentParams.movie" active="directors"/>
+
+    <div v-if="!store.currentParams.movie">
+        <form  method="get" class="movie-filter-form">
         <div class="filter-row">
 
             <SearchFilter :search="store.currentParams.search ?? ''" placeholder="Название фильма..." />
-            <RadioFilter label="Тип" name="type" emptyLabel="Все" :currentFilter="store.currentParams.type ?? ''" :items="store.filter.types" />
-            <SelectFilter label="Год" name="year" emptyLabel="Все года" :currentFilter="store.currentParams.year ?? ''" :items="store.filter.years" />
-            <SelectFilter label="Жанр" name="genre" emptyLabel="Все жанры" :currentFilter="store.currentParams.genre ?? ''" :items="store.filter.genres" />
-            <SelectFilter label="Страна" name="country" emptyLabel="Все страны" :currentFilter="store.currentParams.country ?? ''" :items="store.filter.countries" />
             <OrderingFilter :currentFilter="store.currentParams.sort ?? ''" :items="store.filter.sort" />
             <ClearFilter />
 
         </div>
+        <h1 class="page-title">Роли</h1>
+        <div class="pagination-info">
+            Показано <span class="current-count">{{ store.shownItems }}</span> из
+            <span class="total-count">{{ store.count }}</span> ролей
+        </div>
     </form>
-
-    <h1 class="page-title">Роли</h1>
-    <div v-if="store.loading">Загрузка...</div>
-    <div v-else-if="store.error" class="error">{{ store.error }}</div>
-
-    <div v-else class="pagination-info">
-        Показано <span class="current-count">{{ store.shownItems }}</span> из
-        <span class="total-count">{{ store.count }}</span> фильмов
     </div>
- 
+    
     <ol class="movie-list">
-        <li v-for="(movie, index) in store.items" :key="movie.id" class="movie-item">
+        <li v-for="(profession, index) in store.items" :key="profession.id" class="movie-item">
         <div class="movie-number">
             {{ (store.currentPage - 1) * 10 + index + 1 }}
         </div>
         <div class="movie-info">
-            <a class="movie-title-link" :href="movie.id">
-                <span class="movie-title">{{ movie.name }}</span>
+            <a class="movie-title-link" :href="profession.id">
+                <span class="movie-title">{{ profession.person.full_name }}</span>
             </a>
-            <a class="movie-year-link" :href="movie.id">
-                <span class="movie-year">{{ movie.movie }}</span> - 
-                <span class="movie-year">{{ movie.person }}</span>
+            <a v-if="!store.currentParams.movie" class="movie-year-link" :href="profession.id">
+                <span class="movie-year">{{ profession.name }}</span> - 
+                <span class="movie-year">{{ profession.movie.title }}</span>
+                
             </a>
         </div>
         </li>
     </ol>
 
-    <Pagination :store="store" />
+    <Pagination v-if="!store.currentParams.movie" :store="store" />
     
   </div>
 </template>
@@ -77,7 +78,6 @@ watch(
     margin-right: 12%;
     padding: 20px;
     background: white;
-    min-height: 100vh;
 }
 .movie-filter-form {
     background: #f8f9fa;

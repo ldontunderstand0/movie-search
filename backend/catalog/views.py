@@ -1,3 +1,5 @@
+from unittest import case
+
 from django.contrib.auth import login, logout
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models.functions import ExtractYear
@@ -6,15 +8,18 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.core.cache import cache
 from django.db.models import Prefetch
-from rest_framework.decorators import action
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import CreateAPIView
 #import weasyprint
 from urllib.parse import quote
+
+from catalog.models import Movie
 from utils import querysets
 from utils.serializers import get_sort_dict
 from catalog import models, serializers, filters, permissions
@@ -30,6 +35,17 @@ def admin_review_pdf(request, review_id):
     # response['Content-Disposition'] = f"attachment; filename*=UTF-8''{quote(filename)}"
     #weasyprint.HTML(string=html).write_pdf(response)
     return response
+
+
+@api_view(['GET'])
+def me(request):
+    if request.user.is_authenticated:
+        return Response({
+            "id": request.user.id,
+            "username": request.user.username,
+            "is_staff": request.user.is_staff,
+        })
+    return Response({"user": None})
 
 
 class SignUpView(CreateAPIView):
@@ -52,8 +68,12 @@ class LoginView(APIView):
         if not user.check_password(password):
             raise AuthenticationFailed('Incorrect password.')
         login(request, user)
+        if Token.objects.filter(user=user).exists():
+            token = Token.objects.get(user=user).key
+        else:
+            token = Token.objects.create(user=user)
 
-        return Response({"success": "User logged in.",})
+        return Response({"token": token})
 
 
 class LogoutView(APIView):
@@ -115,9 +135,12 @@ class MovieViewSet(ModelViewSet):
     filterset_class = filters.MovieFilter
 
     def get_serializer_class(self):
-        if self.action == 'list':
-            return serializers.MovieListSerializer
-        return serializers.MovieDetailSerializer
+        match self.action:
+            case 'list':
+                return serializers.MovieListSerializer
+            case 'retrieve':
+                return serializers.MovieDetailSerializer
+        return serializers.MovieSerializer
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -156,6 +179,15 @@ class MovieViewSet(ModelViewSet):
             cache.set(cache_key, cached_filters, 60 * 60)
 
         return Response(cached_filters)
+
+    @action(detail=True, methods=['get'])
+    def clear(self, request, pk=None):
+        movie = Movie.objects.filter(id=pk).first()
+        if movie:
+            serializer = serializers.MovieSerializer(movie, context={'request': request})
+            return Response(serializer.data)
+        else:
+            return Response({'detail': 'Movie not found'})
 
 
 class ReviewViewSet(ModelViewSet):
@@ -243,7 +275,8 @@ class PersonViewSet(ModelViewSet):
     def get_queryset(self):
         qs = super().get_queryset()
         annotated_movies = querysets.annotate_movie_queryset(models.Movie.objects.all())
-        return qs.prefetch_related(Prefetch('professions__movie', queryset=annotated_movies))
+        pref = qs.prefetch_related(Prefetch('professions__movie', queryset=annotated_movies))
+        return querysets.annotate_person_queryset(pref)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -290,10 +323,35 @@ class GenreViewSet(ModelViewSet):
     queryset = models.Genre.objects.all()
     filterset_class = filters.GenreFilter
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return querysets.annotate_genre_queryset(qs)
+
     def get_serializer_class(self):
         if self.action == 'list':
             return serializers.GenreListSerializer
         return serializers.GenreSerializer
+
+    @action(detail=False, methods=['get'])
+    def filter(self, request):
+        cache_key = 'genre_available_filters'
+        cached_filters = cache.get(cache_key)
+
+        if not cached_filters:
+
+            sort = get_sort_dict([
+                ('По алфавиту (А - Я)', 'name'),
+                ('По алфавиту (А - Я)', '-name'),
+                ('По возрастанию фильмов', 'movies_count'),
+                ('По убыванию фильмов', '-movies_count'),
+            ])
+
+            cached_filters = {
+                'sort': sort,
+            }
+            cache.set(cache_key, cached_filters, 60 * 60)
+
+        return Response(cached_filters)
 
 
 class CountryViewSet(ModelViewSet):

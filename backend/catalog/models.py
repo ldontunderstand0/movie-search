@@ -61,7 +61,7 @@ class Movie(models.Model):
         MOVIE = 'Фильм', 'Фильм'
         SERIES = 'Сериал', 'Сериал'
 
-    type = models.CharField(max_length=200, verbose_name='Тип', choices=Type.choices, default=Type.MOVIE)
+    type = models.CharField(max_length=200, verbose_name='Тип', choices=Type.choices, default=Type.MOVIE, null=True)
     title = models.CharField(max_length=200, verbose_name='Название')
     release_date = models.DateField(verbose_name='Дата выхода', blank=True, null=True)
     description = models.TextField(verbose_name='Описание', blank=True, null=True)
@@ -122,6 +122,13 @@ class Person(models.Model):
         null=True,
         verbose_name='Биография',
         help_text='Файл с биографией (.txt)'
+    )
+    photo = models.ImageField(
+        upload_to='images/photos/',  # Папка для загрузки
+        blank=True,  # Необязательное поле
+        null=True,  # Может быть пустым в БД
+        verbose_name='Фото',
+        help_text='Загрузите фото личности'
     )
     movies = models.ManyToManyField(
         'Movie', verbose_name='Фильмы', related_name='movies', through='Profession', blank=True

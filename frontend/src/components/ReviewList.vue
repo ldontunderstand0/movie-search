@@ -5,6 +5,7 @@ import { useResourceStore } from '@/stores/resourceStore'
 import api from '@/services/api'
 import Pagination from '@/components/Pagination.vue'
 import { SearchFilter, RadioFilter, SelectFilter, OrderingFilter, ClearFilter } from '@/components/filters'
+import MovieNav from './movie/MovieNav.vue'
 
 const route = useRoute()
 const store = useResourceStore()
@@ -23,7 +24,11 @@ watch(
 </script>
 
 <template>
-  <div class="movie-list-container">
+<div v-if="store.loading">Загрузка...</div>
+<div v-else-if="store.error" class="error">{{ store.error }}</div>
+<div v-else-if="store.items" class="movie-list-container">
+
+    <MovieNav v-if="store.currentParams.movie" :movie_id="store.currentParams.movie" active="review"/>
 
     <form method="get" class="movie-filter-form">
         <div class="filter-row">
@@ -33,26 +38,27 @@ watch(
         </div>
     </form>
 
-    <h1 class="page-title">Рецензии</h1>
-    <div v-if="store.loading">Загрузка...</div>
-    <div v-else-if="store.error" class="error">{{ store.error }}</div>
+    <h1 v-if="!store.currentParams.movie" class="page-title">Рецензии</h1>
 
-    <div v-else class="pagination-info">
+    <div class="pagination-info">
         Показано <span class="current-count">{{ store.shownItems }}</span> из
         <span class="total-count">{{ store.count }}</span> рецензий
     </div>
  
     <div class="reviews-container">
     <div class="reviews-list">
-        <div v-for="review in store.items" class="review-item review-type">
+        <div v-for="review in store.items"
+        :class="['review-item', 
+        review.type === 'Положительная' ? 'review-type-positive' :review.type === 'Негативная' ? 'review-type-negative' : 'review-type-neutral']">
             <div class="review-header">
                 <div class="user-avatar">
                     <span class="avatar-icon">👤</span>
                 </div>
                 <div class="user-info">
-                    <div class="user-name">{{ review.user }}</div>
-                    <div class="review-date">{{ review.created_at }}</div>
-                    <div class="review-date">{{ review.updated_at }}</div>
+                    <router-link class="user-name" :to="{name: 'user-detail', params: {id: review.user.id}}">{{ review.user.username }}</router-link>
+                    <div class="review-date">написано {{ new Date(review.created_at).toLocaleString('ru-RU', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'}) }}</div>
+                    <div class="review-date">изменено {{ new Date(review.updated_at).toLocaleString('ru-RU', {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'}) }}</div>
+                
                 </div>
             </div>
 
@@ -64,11 +70,11 @@ watch(
             </div>
         </div>
     </div>
-</div>
+    </div>
 
     <Pagination :store="store" />
     
-  </div>
+</div>
 </template>
 
 

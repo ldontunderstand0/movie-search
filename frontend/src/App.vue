@@ -1,4 +1,15 @@
 <script setup>
+import { watch } from 'vue'
+import { useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const route = useRoute()
+const auth = useAuthStore()
+
+watch(() => route.fullPath, async() => {
+  await auth.fetchUser()
+})
+
 </script>
 
 <template>
@@ -6,24 +17,25 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <!-- Логотип -->
-            <router-link class="navbar-brand" to="/">
-                🎬 Киносайт
-            </router-link>
+            
 
             <!-- Меню -->
             <div class="collapse navbar-collapse" id="navbarNav">
+                <router-link class="navbar-brand" to="/">
+                Киносайт
+                </router-link>
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/movie/">Фильмы</router-link>
+                        <router-link class="nav-link" :to="{name: 'movie'}">Фильмы</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/person/">Личности</router-link>
+                        <router-link class="nav-link" :to="{name: 'person'}">Личности</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/genre/">Жанры</router-link>
+                        <router-link class="nav-link" :to="{name: 'genre'}">Жанры</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/country/">Страны</router-link>
+                        <router-link class="nav-link" :to="{name: 'country'}">Страны</router-link>
                     </li>
                 </ul>
 
@@ -39,30 +51,29 @@
 
                     <!-- Личный кабинет / Авторизация -->
                     <li class="nav-item dropdown">
-                        <router-link class="nav-link dropdown-toggle" to="#" id="userDropdown" role="button"
+                        <router-link v-if="auth.user" class="nav-link dropdown-toggle" to="#" id="userDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            👤 user.username
+                            👤 {{ auth.user.username }}
                         </router-link>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><router-link class="dropdown-item" to="#">Личный кабинет</router-link></li>
-                            <li><router-link class="dropdown-item" to="#">Мои оценки</router-link></li>
-                            <li><router-link class="dropdown-item" to="#">Хочу посмотреть</router-link></li>
+                        <ul v-if="auth.user" class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><router-link class="dropdown-item" :to="{name: 'user-detail', params: {id: auth.user.id} }">Личный кабинет</router-link></li>
+                            <li><router-link class="dropdown-item" :to="{name: 'rating', query: {user: auth.user.id}}">Мои оценки</router-link></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><router-link class="dropdown-item" to="/admin/">Админ Панель</router-link></li>
-                            <li><router-link class="dropdown-item" to="#">Выйти</router-link></li>
+                            <li><router-link v-if="auth.user.is_staff" class="dropdown-item" to="/admin">Админ Панель</router-link></li>
+                            <li><router-link class="dropdown-item" :to="{name: 'logout'}">Выйти</router-link></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="#">Войти</router-link>
+                        <router-link v-if="!auth.user" class="nav-link" :to="{name: 'login'}">Войти</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="#">Регистрация</router-link>
+                        <router-link v-if="!auth.user" class="nav-link" to="#">Регистрация</router-link>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-    <router-view/>
+    <router-view :key="$route.fullPath"/>
   </div>
 </template>
 

@@ -73,6 +73,7 @@ class PersonFilter(filters.FilterSet):
         fields=[
             ('full_name', 'full_name'),
             ('birth_date', 'birth_date'),
+            ('_days_to_birthday', 'birthday'),
         ]
     )
 
@@ -162,9 +163,16 @@ class GenreFilter(filters.FilterSet):
 
     search = filters.CharFilter(field_name='name', lookup_expr='iсontains')
 
+    sort = filters.OrderingFilter(
+        fields=[
+            ('name', 'name'),
+            ('_movies_count', 'movies_count'),
+        ]
+    )
+
     class Meta:
         model = models.Genre
-        fields = ['search']
+        fields = ['search', 'sort']
 
 
 class CountryFilter(filters.FilterSet):

@@ -2,10 +2,13 @@
 import { watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useResourceStore } from '@/stores/resourceStore'
+import { useAuthStore } from '@/stores/auth'
 import api from '@/services/api'
 import Pagination from '@/components/Pagination.vue'
 import { SearchFilter, RadioFilter, SelectFilter, OrderingFilter, ClearFilter } from '@/components/filters'
+import { destroyButton, updateButton, createButton } from '@/components/buttons'
 
+const auth = useAuthStore()
 const route = useRoute()
 const store = useResourceStore()
 
@@ -19,10 +22,13 @@ watch(
   },
   { immediate: true }
 )
+
 </script>
 
 <template>
-  <div class="movie-list-container">
+<div v-if="store.loading">Загрузка...</div>
+<div v-else-if="store.error" class="error">{{ store.error }}</div>
+<div v-else class="movie-list-container">
 
     <form method="get" class="movie-filter-form">
         <div class="filter-row">
@@ -38,11 +44,11 @@ watch(
         </div>
     </form>
 
-    <h1 class="page-title">Фильмы</h1>
-    <div v-if="store.loading">Загрузка...</div>
-    <div v-else-if="store.error" class="error">{{ store.error }}</div>
+    <h1 class="page-title">Фильмы
+        <createButton v-if="auth.user && auth.user.is_staff" name="movie-create" />
+    </h1>
 
-    <div v-else class="pagination-info">
+    <div class="pagination-info">
         Показано <span class="current-count">{{ store.shownItems }}</span> из
         <span class="total-count">{{ store.count }}</span> фильмов
     </div>
@@ -53,9 +59,9 @@ watch(
             {{ (store.currentPage - 1) * 10 + index + 1 }}
         </div>
         <div v-if="movie.poster" class="movie-poster">
-            <a :href="movie.id">
+            <router-link :to="{name: 'movie-detail',  params: {id: movie.id}}">
                 <img class="poster-image" :src="movie.poster">
-            </a>
+            </router-link>
         </div>
         <div v-else class="movie-list">
             <div class="no-poster">
@@ -63,17 +69,19 @@ watch(
             </div>
         </div>
         <div class="movie-info">
-            <a class="movie-title-link" :href="movie.id">
+            <router-link class="movie-title-link" :to="{name: 'movie-detail',  params: {id: movie.id}}">
                 <span class="movie-title">{{ movie.title }}</span>
-            </a>
-            <a class="movie-year-link" :href="movie.id">
+            </router-link>
+            <router-link class="movie-year-link" :to="{name: 'movie-detail',  params: {id: movie.id}}">
                 <span class="movie-year">{{ movie.release_year }}</span>
-            </a>
-            <a class="movie-rate-link" :href="movie.id">
+            </router-link>
+            <router-link class="movie-rate-link" :to="{name: 'movie-detail',  params: {id: movie.id}}">
                 <span v-if="movie.rate" class="movie-rate">★ {{ movie.rate }}</span>
                 <span v-else class="movie-rate">★ 0.0</span>
-            </a>
+            </router-link>
         </div>
+        <updateButton v-if="auth.user && auth.user.is_staff" name="movie-update" :id="movie.id" />
+        <destroyButton v-if="auth.user && auth.user.is_staff" :id="movie.id" :api="api.movie"/>
         </li>
     </ol>
 

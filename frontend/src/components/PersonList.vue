@@ -5,6 +5,8 @@ import { useResourceStore } from '@/stores/resourceStore'
 import api from '@/services/api'
 import Pagination from '@/components/Pagination.vue'
 import { SearchFilter, ClearFilter } from '@/components/filters'
+import MovieNav from './movie/MovieNav.vue'
+import router from '../router'
 
 const route = useRoute()
 const store = useResourceStore()
@@ -50,15 +52,15 @@ watch(
         <div class="movie-list">
         </div>
         <div class="movie-info">
-            <a class="movie-title-link" :href="person.id">
+            <router-link class="movie-title-link" :to="{name: 'person-detail', params: {id: person.id}}">
                 <span class="movie-title">{{ person.full_name }}</span>
-            </a>
-            <a class="movie-year-link" :href="person.id">
+            </router-link>
+            <router-link class="movie-year-link" :to="{name: 'person-detail', params: {id: person.id}}">
                 <span class="movie-year">{{ person.sex }}</span>
-            </a>
-            <a class="movie-year-link" :href="person.id">
+            </router-link>
+            <router-link class="movie-year-link" :to="{name: 'person-detail', params: {id: person.id}}">
                 <span class="movie-year">{{ person.birth_date }}</span>
-            </a>
+            </router-link>
         </div>
         </li>
     </ol>
