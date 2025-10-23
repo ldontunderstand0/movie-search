@@ -4,6 +4,7 @@ import MovieDetail from '@/components/movie/MovieDetail.vue'
 import Edit from '@/components/movie/Edit.vue'
 
 import PersonList from '@/components/PersonList.vue'
+import PersonDetail from '@/components/PersonDetail.vue'
 import ReviewList from '@/components/ReviewList.vue'
 import UserList from '@/components/UserList.vue'
 
@@ -39,7 +40,7 @@ const routes = [
   { path: '/rating', name: 'rating-create', component: RatingCreate },
 
   { path: '/person', name: 'person', component: PersonList },
-  { path: '/person/:id', name: 'person-detail', component: PersonList },
+  { path: '/person/:id', name: 'person-detail', component: PersonDetail },
 
   { path: '/profession', name: 'profession', component: ProfessionList },
 

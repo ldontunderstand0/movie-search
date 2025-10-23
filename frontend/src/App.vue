@@ -1,5 +1,5 @@
 <script setup>
-import { watch } from 'vue'
+import { watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -8,7 +8,9 @@ const auth = useAuthStore()
 
 watch(() => route.fullPath, async() => {
   await auth.fetchUser()
-})
+},
+{ immediate: true }
+)
 
 </script>
 
@@ -42,12 +44,12 @@ watch(() => route.fullPath, async() => {
                 <!-- Правая часть навигации -->
                 <ul class="navbar-nav">
                     <!-- Поиск -->
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <form class="d-flex" action="#" method="get">
                             <input class="form-control2 me-2" type="search" name="q" placeholder="Поиск..." aria-label="Search">
                             <button class="btn btn-outline-light" type="submit">Найти</button>
                         </form>
-                    </li>
+                    </li> -->
 
                     <!-- Личный кабинет / Авторизация -->
                     <li class="nav-item dropdown">
