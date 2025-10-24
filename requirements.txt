@@ -3,6 +3,7 @@ Brotli==1.1.0
 cffi==2.0.0
 cssselect2==0.8.0
 Django==5.2.6
+django-cors-headers==4.9.0
 django-filter==25.1
 djangorestframework==3.16.1
 fonttools==4.60.1
