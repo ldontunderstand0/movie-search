@@ -175,7 +175,6 @@ onMounted(async () => {
     margin-right: 12%;
     padding: 20px;
     background: white;
-    min-height: 100vh;
 }
 .top-movies {
   margin: 30px 0;
@@ -272,5 +271,141 @@ onMounted(async () => {
 
 .movie-title:hover {
   color: #ffa500;
+}
+
+@media (max-width: 1024px) {
+  .movie-list-container {
+    margin-left: 6%;
+    margin-right: 6%;
+    padding: 15px;
+  }
+
+  .section-title {
+    font-size: 1.4rem;
+  }
+
+  .poster {
+    width: 160px;
+    height: 210px;
+  }
+
+  .no-poster {
+    width: 150px;
+    height: 210px;
+  }
+
+  .bday-badge {
+    top: 180px;
+    font-size: 0.85rem;
+  }
+}
+
+/* --- Для экранов до 768px (мобильные в горизонтали, маленькие планшеты) --- */
+@media (max-width: 768px) {
+  .movie-list-container {
+    margin: 0 4%;
+    padding: 10px;
+  }
+
+  .main {
+    font-size: 1.4rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .movie-list {
+    gap: 14px;
+  }
+
+  .movie-card {
+    min-width: 140px;
+  }
+
+  .poster,
+  .no-poster {
+    width: 145px;
+    height: 200px;
+  }
+
+  .bday-badge {
+    top: 170px;
+    font-size: 0.8rem;
+  }
+}
+
+/* --- Для экранов до 480px (смартфоны) --- */
+@media (max-width: 480px) {
+  .movie-list-container {
+    margin: 0 2%;
+    padding: 8px;
+  }
+
+  .main {
+    font-size: 1.2rem;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+
+  .movie-list {
+    gap: 10px;
+    padding-bottom: 6px;
+  }
+
+  .movie-card {
+    min-width: 120px;
+  }
+
+  .poster,
+  .no-poster {
+    width: 120px;
+    height: 170px;
+  }
+
+  .rating-badge {
+    font-size: 0.75rem;
+    padding: 2px 5px;
+  }
+
+  .bday-badge {
+    top: 145px;
+    font-size: 0.75rem;
+    width: 80%;
+  }
+
+  .movie-title {
+    font-size: 0.85rem;
+  }
+
+  .confetti span {
+    width: 4px;
+    height: 8px;
+  }
+}
+
+/* --- Для очень маленьких экранов до 360px --- */
+@media (max-width: 360px) {
+  .poster,
+  .no-poster {
+    width: 100px;
+    height: 150px;
+  }
+
+  .movie-card {
+    min-width: 100px;
+  }
+
+  .movie-title {
+    font-size: 0.75rem;
+  }
+
+  .section-title {
+    font-size: 0.9rem;
+  }
 }
 </style>

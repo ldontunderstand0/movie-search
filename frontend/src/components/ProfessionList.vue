@@ -253,4 +253,151 @@ watch(
     font-size: 18px;
     color: #666;
 }
+@media (max-width: 992px) {
+  .movie-list-container {
+    margin-left: 5%;
+    margin-right: 5%;
+    padding: 15px;
+  }
+
+  .movie-filter-form {
+    padding: 15px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .movie-item {
+    align-items: flex-start;
+    padding: 15px;
+    gap: 10px;
+  }
+
+  .movie-number {
+    position: static;
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+
+  .movie-info {
+    margin-left: 0;
+  }
+
+  .movie-title {
+    font-size: 16px;
+  }
+
+  .movie-year {
+    font-size: 13px;
+  }
+
+  .pagination-info {
+    font-size: 13px;
+    padding: 10px 15px;
+  }
+}
+
+/* --- Мобильные устройства до 768px --- */
+@media (max-width: 768px) {
+  .movie-list-container {
+    margin: 0 3%;
+    padding: 10px;
+  }
+
+  .movie-filter-form {
+    padding: 12px;
+    margin-bottom: 20px;
+  }
+
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  :deep(.filter-group) {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  :deep(.filter-label-text) {
+    font-size: 13px;
+  }
+
+  :deep(.filter-select) {
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .page-title {
+    font-size: 22px;
+    padding-bottom: 10px;
+  }
+
+  .movie-item {
+    padding: 12px;
+  }
+
+  .movie-number {
+    font-size: 16px;
+  }
+
+  .movie-title {
+    font-size: 15px;
+  }
+
+  .movie-year {
+    font-size: 12px;
+  }
+
+  .pagination-info {
+    font-size: 12px;
+  }
+
+  .no-results-text {
+    font-size: 16px;
+  }
+}
+
+/* --- Маленькие телефоны до 480px --- */
+@media (max-width: 480px) {
+  .movie-list-container {
+    margin: 0 1%;
+    padding: 8px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .movie-item {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .movie-title {
+    font-size: 14px;
+  }
+
+  .movie-year {
+    font-size: 11px;
+  }
+
+  .pagination-info {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+
+  .filter-row {
+    gap: 8px;
+  }
+
+  :deep(.filter-select) {
+    padding: 6px 8px;
+  }
+}
 </style>

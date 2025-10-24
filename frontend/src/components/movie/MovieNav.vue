@@ -62,4 +62,30 @@ defineProps({
   border-bottom: 3px solid #000;
   color: #000;
 }
+@media (max-width: 920px) {
+  .tab-link {
+    padding: 8px;
+    
+  }
+  .tab-link a{
+    font-size: 14px;
+  }
+  .tabs ul {
+gap: 0;
+  }
+  
+}
+@media (max-width: 480px) {
+  .tab-link {
+    padding: 8px;
+    
+  }
+  .tab-link a{
+    font-size: 14px;
+  }
+  .tabs ul {
+gap: 0;
+  }
+  
+}
 </style>

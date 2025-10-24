@@ -144,4 +144,55 @@ defineProps({
     font-weight: 600;
     color: #ff8a00;
 }
+@media (max-width: 992px) {
+  .pagination-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pagination-stats {
+    order: 2;
+    font-size: 13px;
+  }
+
+  .pagination-list {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .pagination-link {
+    font-size: 13px;
+    padding: 6px 10px;
+    min-width: 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  .pagination-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+  }
+
+  .pagination-list {
+    gap: 4px;
+  }
+
+  .pagination-link {
+    font-size: 11px !important;
+    padding: 5px 8px;
+    min-width: auto;
+  }
+
+  .pagination-first,
+  .pagination-last {
+    display: none; /* скрываем "Первая" и "Последняя" на очень маленьких экранах */
+  }
+
+  .pagination-stats {
+    font-size: 12px;
+    text-align: center;
+  }
+}
 </style>

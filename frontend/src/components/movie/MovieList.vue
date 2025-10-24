@@ -273,4 +273,131 @@ watch(
     font-size: 18px;
     color: #666;
 }
+
+@media (max-width: 1024px) {
+  .movie-list-container {
+    margin-left: 5%;
+    margin-right: 5%;
+    padding: 15px;
+  }
+
+  .filter-row {
+    gap: 10px;
+  }
+
+  .movie-item {
+    gap: 15px;
+  }
+
+  .movie-poster {
+    width: 90px;
+    height: 135px;
+    margin-left: 40px;
+  }
+
+  .movie-title {
+    font-size: 16px;
+  }
+
+  .movie-number {
+    left: 5px;
+    top: 20px;
+    font-size: 20px;
+  }
+}
+
+/* Экран до 768px (планшеты и большие телефоны) */
+@media (max-width: 768px) {
+  .movie-list-container {
+    margin: 0;
+    padding: 10px;
+  }
+
+
+
+  .movie-item {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px 10px;
+  }
+
+  .movie-number {
+    position: static;
+    font-size: 18px;
+    min-width: 30px;
+    text-align: left;
+    color: #aaa;
+  }
+
+  .movie-poster {
+    width: 80px;
+    height: 120px;
+    margin-left: 0;
+  }
+
+  .movie-title {
+    font-size: 16px;
+  }
+
+  .movie-year,
+  .movie-rate {
+    font-size: 13px;
+  }
+}
+
+/* Экран до 480px (телефоны) */
+@media (max-width: 480px) {
+  .movie-list-container {
+    padding: 8px;
+  }
+
+  .page-title {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .movie-item {
+    padding: 15px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .movie-number {
+    position: static;
+    font-size: 18px;
+    margin-bottom: 5px;
+  }
+
+  .movie-poster {
+    width: 120px;
+    height: 180px;
+    margin: 0 auto 10px;
+  }
+
+  .movie-info {
+    align-items: center;
+  }
+
+  .movie-title {
+    font-size: 18px;
+  }
+
+  .movie-year,
+  .movie-rate {
+    font-size: 14px;
+  }
+
+  .pagination-info {
+    font-size: 12px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .movie-filter-form {
+    padding: 10px;
+  }
+
+}
 </style>

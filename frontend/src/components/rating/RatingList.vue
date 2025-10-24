@@ -116,8 +116,8 @@ watch(
         <span class="total-count">{{ store.count }}</span> оценок
     </div>
 
-    <router-link v-if="store.user && store.user.is_staff" :to="{name: 'rating-create', query: {movie: store.currentParams.movie ?? ''}}">Создать</router-link>
- 
+    <!-- <router-link v-if="store.user && store.user.is_staff" :to="{name: 'rating-create', query: {movie: store.currentParams.movie ?? ''}}">Создать</router-link>
+  -->
     <div class="reviews-container">
     <div class="reviews-list">
         <div v-for="rating in store.items" class="review-item review-type">
@@ -384,5 +384,202 @@ watch(
 .no-results-text {
     font-size: 18px;
     color: #666;
+}
+@media (max-width: 1200px) {
+      .movie-list-container {
+    margin: 0 5%;
+    padding: 15px;
+  }
+}
+@media (max-width: 992px) {
+  .movie-list-container {
+    margin: 0 5%;
+    padding: 15px;
+  }
+
+  .buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .rate-buttons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .buttons-circle {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+    margin: 8px;
+  }
+
+  .rate-circle {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+    margin: 8px 15px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .review-item {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .review-content {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pagination-info {
+    font-size: 13px;
+  }
+}
+
+/* --- Мобильные до 768px --- */
+@media (max-width: 768px) {
+  .movie-list-container {
+    margin: 0 3%;
+    padding: 12px;
+  }
+
+  .buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .rate-buttons {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .buttons-circle {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    margin: 6px;
+  }
+
+  .rate-circle {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    margin: 6px 10px;
+  }
+
+  .page-title {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .filter-row {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  :deep(.filter-group) {
+
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .review-item {
+    padding: 15px;
+  }
+
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+  }
+
+  .user-name {
+    font-size: 13px;
+  }
+
+  .review-date {
+    font-size: 11px;
+  }
+
+  .review-title {
+    font-size: 16px;
+  }
+
+  .review-content {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  .pagination-info {
+    font-size: 12px;
+    padding: 10px 15px;
+  }
+}
+
+/* --- Маленькие телефоны до 480px --- */
+@media (max-width: 480px) {
+  .movie-list-container {
+    margin: 0 1%;
+    padding: 8px;
+  }
+
+  .buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rate-buttons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .buttons-circle {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+    margin: 5px;
+  }
+
+  .rate-circle {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+    margin: 5px 8px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .review-item {
+    padding: 10px;
+  }
+
+  .review-content {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .review-title {
+    font-size: 14px;
+  }
+
+  .review-date {
+    font-size: 10px;
+  }
+
+  .pagination-info {
+    font-size: 11px;
+    padding: 8px 12px;
+  }
 }
 </style>

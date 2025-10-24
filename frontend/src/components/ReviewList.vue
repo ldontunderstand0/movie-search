@@ -40,7 +40,7 @@ watch(
 
     <h1 v-if="!store.currentParams.movie" class="page-title">Рецензии</h1>
 
-    <div class="pagination-info">
+    <div v-if="store.count" class="pagination-info">
         Показано <span class="current-count">{{ store.shownItems }}</span> из
         <span class="total-count">{{ store.count }}</span> рецензий
     </div>
@@ -261,5 +261,167 @@ watch(
 .no-results-text {
     font-size: 18px;
     color: #666;
+}
+@media (max-width: 992px) {
+  .movie-list-container {
+    margin-left: 5%;
+    margin-right: 5%;
+    padding: 15px;
+  }
+
+  .movie-filter-form {
+    padding: 15px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .reviews-container {
+    padding: 20px 15px;
+  }
+
+  .review-item {
+    padding: 15px;
+  }
+
+  .review-title {
+    font-size: 16px;
+  }
+
+  .review-text {
+    font-size: 13px;
+  }
+
+  .pagination-info {
+    font-size: 13px;
+    padding: 10px 15px;
+  }
+}
+
+/* --- Мобильные устройства до 768px --- */
+@media (max-width: 768px) {
+  .movie-list-container {
+    margin: 0 3%;
+    padding: 10px;
+  }
+
+  .movie-filter-form {
+    padding: 12px;
+    margin-bottom: 20px;
+  }
+
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  :deep(.filter-group) {
+
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  :deep(.filter-label-text) {
+    font-size: 13px;
+  }
+
+  :deep(.filter-select) {
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .page-title {
+    font-size: 22px;
+    padding-bottom: 10px;
+  }
+
+  .reviews-container {
+    padding: 15px 10px;
+  }
+
+  .review-item {
+    padding: 12px;
+  }
+
+  .review-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .review-content {
+    margin-left: 0;
+  }
+
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+  }
+
+  .review-title {
+    font-size: 15px;
+  }
+
+  .review-text {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .pagination-info {
+    font-size: 12px;
+  }
+
+  .no-results-text {
+    font-size: 16px;
+  }
+}
+
+/* --- Маленькие телефоны до 480px --- */
+@media (max-width: 480px) {
+  .movie-list-container {
+    margin: 0 1%;
+    padding: 8px;
+  }
+
+  .reviews-container {
+    padding: 10px 8px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .review-item {
+    padding: 10px;
+  }
+
+  .review-header {
+    gap: 6px;
+  }
+
+  .review-title {
+    font-size: 14px;
+  }
+
+  .review-text {
+    font-size: 11px;
+  }
+
+  .review-date {
+    font-size: 11px;
+  }
+
+  .pagination-info {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+
+  :deep(.filter-select) {
+    padding: 6px 8px;
+  }
 }
 </style>

@@ -53,7 +53,7 @@ watch(() => route.fullPath, async() => {
 
                     <!-- Личный кабинет / Авторизация -->
                     <li class="nav-item dropdown">
-                        <router-link v-if="auth.user" class="nav-link dropdown-toggle" to="#" id="userDropdown" role="button"
+                        <router-link v-if="auth.user" class="nav-link dropdown-toggle" id="userDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
                             👤 {{ auth.user.username }}
                         </router-link>
@@ -65,11 +65,11 @@ watch(() => route.fullPath, async() => {
                             <li><router-link class="dropdown-item" :to="{name: 'logout'}">Выйти</router-link></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <router-link v-if="!auth.user" class="nav-link" :to="{name: 'login'}">Войти</router-link>
+                    <li v-if="!auth.user" class="nav-item">
+                        <router-link  class="nav-link" :to="{name: 'login'}">Войти</router-link>
                     </li>
-                    <li class="nav-item">
-                        <router-link v-if="!auth.user" class="nav-link" to="#">Регистрация</router-link>
+                    <li v-if="!auth.user" class="nav-item">
+                        <router-link class="nav-link" to="#">Регистрация</router-link>
                     </li>
                 </ul>
             </div>
@@ -86,6 +86,10 @@ body {
     margin: 0;
     padding: 0;
     color: #333;
+}
+  html, body {
+  height: auto !important;
+  overflow-y: auto !important;
 }
 /* Сброс стилей Bootstrap */
 .navbar {
@@ -233,5 +237,155 @@ body {
 
 .dropdown-item:hover {
     background: #ff8a00;
+}
+
+@media (max-width: 1024px) {
+  .navbar .container {
+    padding: 0 15px;
+  }
+
+  .navbar-brand {
+    font-size: 22px;
+    margin-right: 20px;
+  }
+
+  .nav-link {
+    padding: 12px 16px;
+  }
+
+  .form-control2 {
+    min-width: 180px;
+  }
+}
+
+/* --- Мобильные устройства (до 768px) --- */
+@media (max-width: 768px) {
+    .nav-item {
+        margin-top: 1%;
+    }
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navbar .container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Основное меню */
+  .navbar-collapse {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .navbar-nav {
+    width: 100%;
+    margin-top: 5px;
+  }
+
+  .navbar-nav.me-auto {
+    margin-right: 0;
+  }
+
+  .nav-item {
+    width: 100%;
+  }
+
+  .nav-link {
+    width: 100%;
+    padding: 10px 15px;
+    text-align: left;
+  }
+
+
+  /* Правая часть */
+  .navbar-nav:not(.me-auto) {
+    align-items: flex-start;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .dropdown-menu {
+    display: none;
+    width: 100%;
+    background: #222;
+    border: none;
+    margin-top: 5px;
+  }
+
+  .dropdown-item {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+
+  /* Поиск (если включишь обратно) */
+  .d-flex {
+    width: 100%;
+  }
+
+  .form-control2 {
+    flex-grow: 1;
+    min-width: unset;
+  }
+
+  .btn-outline-light {
+    padding: 8px 15px;
+  }
+}
+@media (max-width: 640px) {
+    .navbar-brand {
+    font-size: 18px;
+  }
+      .nav-link {
+    font-size: 13px;
+  }
+}
+/* --- Маленькие телефоны (до 480px) --- */
+@media (max-width: 480px) {
+  .navbar-collapse {
+    flex-direction: column;
+    align-items: center;
+  }
+.navbar-nav:not(.me-auto) {
+    max-width: 28%;
+  }
+  .navbar-brand {
+    margin: 0;
+  }
+
+
+  .nav-link {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+
+  .dropdown-item {
+    font-size: 0.9rem;
+  }
+
+  .form-control2 {
+    padding: 6px 10px;
+  }
+
+  .btn-outline-light {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+  }
+}
+
+/* --- Очень маленькие экраны (до 360px) --- */
+@media (max-width: 360px) {
+  .navbar-brand {
+    font-size: 18px;
+  }
+
+  .nav-link {
+    font-size: 0.85rem;
+  }
+
+  .dropdown-item {
+    font-size: 0.85rem;
+  }
 }
 </style>

@@ -127,4 +127,12 @@ watch(
     font-size: 18px;
     color: #666;
 }
+
+@media (max-width: 480px) {
+  .movie-list-container {
+    margin: 0 1%;
+    padding: 3%;
+  }
+
+}  
 </style>

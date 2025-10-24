@@ -55,7 +55,7 @@ defineProps({
     padding: 8px 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 0.5em;
     background: white;
     min-width: 120px;
 }
@@ -63,5 +63,23 @@ defineProps({
 .filter-select:focus {
     outline: none;
     border-color: #ff8a00;
+}
+
+@media (max-width: 820px) {
+  .filter-label-text {
+    font-size: 14px;
+  }
+  .filter-select {
+    font-size: 14px !important;
+  }
+  .filter-input {
+    font-size: 14px;
+  }
+  .filter-radio-text {
+    font-size: 14px;
+  }
+  .clear-button {
+    font-size: 0.5em;
+  }
 }
 </style>

@@ -19,7 +19,7 @@
     padding: 8px 16px;
     border-radius: 4px;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 1em;
     font-weight: 500;
     transition: all 0.3s ease;
 }

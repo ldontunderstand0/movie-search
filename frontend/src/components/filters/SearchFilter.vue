@@ -56,4 +56,21 @@ defineProps({
     border-color: #ff8a00;
     box-shadow: 0 0 0 2px rgba(255, 138, 0, 0.1);
 }
+@media (max-width: 820px) {
+  .filter-label-text {
+    font-size: 14px;
+  }
+  .filter-select {
+    font-size: 14px !important;
+  }
+  .filter-input {
+    font-size: 14px;
+  }
+  .filter-radio-text {
+    font-size: 14px;
+  }
+  .clear-button {
+    font-size: 0.5em;
+  }
+}
 </style>

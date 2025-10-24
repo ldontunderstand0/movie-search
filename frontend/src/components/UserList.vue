@@ -254,4 +254,158 @@ table {
     font-size: 18px;
     color: #666;
 }
+@media (max-width: 992px) {
+  .movie-list-container {
+    margin: 0 6%;
+    padding: 15px;
+  }
+
+  .filter-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .movie-title {
+    font-size: 17px;
+  }
+
+  .movie-year {
+    font-size: 13px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .movie-item {
+
+    padding: 15px 10px 15px 45px;
+  }
+
+  .movie-number {
+    font-size: 20px;
+    left: 10px;
+    top: 15px;
+  }
+
+  .movie-title-link {
+    padding-left: 0;
+  }
+
+  table th {
+
+    text-align: left;
+    padding: 4px 0;
+  }
+}
+
+/* --- Телефоны (до 768px) --- */
+@media (max-width: 768px) {
+  .movie-list-container {
+    margin: 0 4%;
+    padding: 12px;
+  }
+
+  .movie-filter-form {
+    padding: 15px;
+  }
+
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .page-title {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .movie-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 15px 10px 15px 40px;
+  }
+
+  .movie-number {
+    font-size: 18px;
+    top: 10px;
+    left: 5px;
+  }
+
+  .movie-title {
+    font-size: 16px;
+  }
+
+  .movie-year {
+    font-size: 12px;
+  }
+
+  .pagination-info {
+    font-size: 13px;
+    padding: 10px 15px;
+  }
+
+  table {
+    font-size: 13px;
+  }
+
+  table th {
+    display: block;
+    text-align: left;
+    font-weight: normal;
+    padding: 4px 0;
+  }
+}
+
+/* --- Маленькие телефоны (до 480px) --- */
+@media (max-width: 480px) {
+  .movie-list-container {
+    margin: 0 2%;
+    padding: 10px;
+  }
+
+  .movie-filter-form {
+    padding: 12px;
+  }
+  .filter-group {
+    width: 90%;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .movie-item {
+    padding: 12px 8px 12px 35px;
+  }
+
+  .movie-number {
+    font-size: 16px;
+    top: 8px;
+    left: 3px;
+  }
+
+  .movie-title {
+    font-size: 15px;
+  }
+
+  .movie-year {
+    font-size: 11px;
+  }
+
+  .pagination-info {
+    font-size: 12px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  table th {
+    display: block;
+    padding: 3px 0;
+  }
+}
 </style>

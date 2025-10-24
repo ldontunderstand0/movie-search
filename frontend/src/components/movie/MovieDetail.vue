@@ -482,11 +482,48 @@ async function loadMovie() {
     line-height: 1.6;
     color: #333;
 }
+/* Анимации */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.movie-header-section {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.movie-info-sections {
+    animation: fadeInUp 0.6s ease-out 0.1s both;
+}
+
+.description-section {
+    animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+/* Дополнительные стили */
+.button-icon {
+    font-size: 16px;
+}
+
+.rating-main .rating-score {
+    background: linear-gradient(135deg, #ff8a00, #ff5e00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
 
 /* Адаптивность */
-@media (max-width: 768px) {
+@media (max-width: 800px) {
     .movie-detail-container {
         padding: 20px 15px;
+        margin: 1%;
+
     }
 
     .movie-header-section {
@@ -527,40 +564,18 @@ async function loadMovie() {
     }
 }
 
-/* Анимации */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-.movie-header-section {
-    animation: fadeInUp 0.6s ease-out;
-}
 
-.movie-info-sections {
-    animation: fadeInUp 0.6s ease-out 0.1s both;
-}
+@media (max-width: 480px) {
+  .movie-detail-container {
+    margin: 0 1%;
+    padding: 3%;
+  }
+  .video-wrapper {
+    width: 300px;
+    height: 70px;
+  }
 
-.description-section {
-    animation: fadeInUp 0.6s ease-out 0.2s both;
-}
-
-/* Дополнительные стили */
-.button-icon {
-    font-size: 16px;
-}
-
-.rating-main .rating-score {
-    background: linear-gradient(135deg, #ff8a00, #ff5e00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
+}  
 
 </style>
