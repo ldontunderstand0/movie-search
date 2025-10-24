@@ -10,8 +10,8 @@ defineProps({
 
 <style scoped>
 .update {
-  background-color: #45dc2e;
-  color: #ffffff;
+  background-color: #a3e599;
+  color: #000000;
   border-radius: 4px;
   padding: 1% 2%;
   font-weight: bold;

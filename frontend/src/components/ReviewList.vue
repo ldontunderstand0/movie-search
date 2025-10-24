@@ -24,13 +24,11 @@ watch(
 </script>
 
 <template>
-<div v-if="store.loading">Загрузка...</div>
-<div v-else-if="store.error" class="error">{{ store.error }}</div>
-<div v-else-if="store.items" class="movie-list-container">
+<div class="movie-list-container" id="movie-list-container">
 
     <MovieNav v-if="store.currentParams.movie" :movie_id="store.currentParams.movie" active="review"/>
 
-    <form method="get" class="movie-filter-form">
+    <form method="get" class="movie-filter-form" role="form" aria-label="Фильтры">
         <div class="filter-row">
 
             <OrderingFilter :currentFilter="store.currentParams.sort ?? ''" :items="store.filter.sort" />

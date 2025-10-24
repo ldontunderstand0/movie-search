@@ -16,13 +16,17 @@ watch(() => route.fullPath, async() => {
 
 <template>
   <div id="app">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role="navigation" aria-label="Основное меню" >
         <div class="container">
             <!-- Логотип -->
             
 
             <!-- Меню -->
             <div class="collapse navbar-collapse" id="navbarNav">
+              <a class="skip-link" href="#movie-list-container">
+                Перейти к контенту
+              </a>
                 <router-link class="navbar-brand" to="/">
                 Киносайт
                 </router-link>
@@ -80,6 +84,18 @@ watch(() => route.fullPath, async() => {
 </template>
 
 <style>
+.skip-link {
+  display: block;
+  position: absolute;
+  top: 0;
+  padding: 10px 15px;
+  color: #18191c;
+  background: #10F3AF;
+  transform: translateY(-100%);
+}
+.skip-link:focus {
+  transform: translateY(20%);
+}
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background-color: #f5f5f5;

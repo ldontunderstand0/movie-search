@@ -100,7 +100,7 @@ defineProps({
 }
 
 .pagination-link {
-    color: #666;
+    color: #333333;
     background: white;
 }
 
@@ -132,7 +132,7 @@ defineProps({
 /* Статистика пагинации */
 .pagination-stats {
     font-size: 14px;
-    color: #666;
+    color: #323232;
 }
 
 .current-page {
@@ -142,7 +142,7 @@ defineProps({
 
 .total-pages {
     font-weight: 600;
-    color: #ff8a00;
+    color: #794100;
 }
 @media (max-width: 992px) {
   .pagination-container {

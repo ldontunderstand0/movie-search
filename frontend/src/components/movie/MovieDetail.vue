@@ -30,7 +30,7 @@ async function loadMovie() {
 <template>
 <div v-if="store.loading">Загрузка...</div>
 <div v-else-if="store.error" class="error">{{ store.error }}</div>
-<div v-else-if="store.items" class="movie-detail-container">
+<div v-else-if="store.items" class="movie-detail-container" id="movie-list-container">
 
     <MovieNav :movie_id="store.items.id" active="movie"/>
 
@@ -57,11 +57,11 @@ async function loadMovie() {
                     <div class="rating-label">рейтинг</div>
                 </div>
                 <div class="rating-votes">количество оценок: {{ store.items.rates_count }}</div>
-                <button class="rate-button">Изменить оценку</button>
+                <!-- <button class="rate-button">Изменить оценку</button> -->
             </div>
 
             <div class="info-left-column">
-            <section class="info-section">
+            <section class="info-section" role="region" aria-label="Информация о фильме"> 
                 <h3 class="section-title">О фильме</h3>
                 <div class="info-table">
                     <div class="info-row">
@@ -103,7 +103,7 @@ async function loadMovie() {
     </div>
 
     <!-- Описание фильма -->
-    <section class="description-section">
+    <section class="description-section" role="region" aria-label="Описание фильма">
         <h3 class="section-title">Описание</h3>
         <div v-if="store.items.description" class="movie-description">
             {{ store.items.description }}
@@ -111,7 +111,7 @@ async function loadMovie() {
         <div v-else class="info-label">Нет описания</div>
     </section>
 
-    <section class="video-section">
+    <section class="video-section" role="region" aria-label="Трейлер фильма">
         <h3 class="section-title">Трейлер</h3>
         <section>
             <div v-if="store.items.trailer_url" class="video-wrapper">
@@ -302,7 +302,7 @@ async function loadMovie() {
 
 .rating-label {
     font-size: 12px;
-    color: #666;
+    color: #333333;
     margin-top: 4px;
 }
 
@@ -328,7 +328,7 @@ async function loadMovie() {
 
 .rating-votes {
     font-size: 14px;
-    color: #666;
+    color: #333333;
 }
 
 .rate-button {
@@ -386,7 +386,7 @@ async function loadMovie() {
 
 .info-label {
     font-weight: 500;
-    color: #666;
+    color: #3f3f3f;
     width: 140px;
     flex-shrink: 0;
     font-size: 14px;

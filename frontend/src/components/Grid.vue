@@ -44,6 +44,9 @@ defineProps({
 .card:hover {
   transform: scale(1.05);
 }
+.card a:focus {
+  transform: scale(1.1);
+}
 
 .link {
   display: block;

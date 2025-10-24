@@ -13,8 +13,8 @@ defineProps({
 
 <template>
 <div class="filter-group">
-    <strong class="filter-label-text">Поиск:</strong>
-    <input class="filter-input search-input" type="text"
+    <strong class="filter-label-text" for="search">Поиск:</strong>
+    <input class="filter-input search-input" type="text" id="search"
             name="search"
             :placeholder="placeholder"
             :value="search"

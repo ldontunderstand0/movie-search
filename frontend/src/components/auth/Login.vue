@@ -19,16 +19,16 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="login-container">
+  <div class="login-container" id="movie-list-container">
     <div class="card">
       <div class="card-header">
                 <h4 class="mb-0">Вход</h4>
             </div>
       <div class="card-body">
         <div class="mb-2"><label for="username" class="form-label">Имя пользователя</label></div>
-        <div class="mb-3"><input class="form-input" v-model="username" /></div>
-        <div class="mb-2"><label for="username" class="form-label">Пароль</label></div>
-        <div class="mb-3"><input class="form-input" v-model="password" type="password" /></div>
+        <div class="mb-3"><input class="form-input" v-model="username" id="username" /></div>
+        <div class="mb-2"><label for="password" class="form-label">Пароль</label></div>
+        <div class="mb-3"><input class="form-input" v-model="password" type="password" id="password"/></div>
         <div class="mb-3"><button class="btn btn-primary" @click="submit"><div class="form-label">Войти</div></button></div>
       </div>
     </div>

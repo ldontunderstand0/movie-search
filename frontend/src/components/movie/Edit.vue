@@ -115,7 +115,7 @@ onMounted(async () => {
 
 </script>
 <template>
-<div>
+<div id="movie-list-container">
     <router-link 
     :to="route.params.id ? {name: 'movie-detail', params: {id: route.params.id}} : {name: 'movie'}"
     class="back-link">&laquo; Назад</router-link>

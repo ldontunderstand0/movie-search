@@ -25,7 +25,7 @@
 }
 
 .clear-button {
-    background: #ff8a00;
+    background: #753e00;
     color: white;
 }
 

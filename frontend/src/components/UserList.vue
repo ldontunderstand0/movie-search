@@ -22,9 +22,9 @@ watch(
 </script>
 
 <template>
-  <div class="movie-list-container">
+  <div class="movie-list-container" id="movie-list-container">
 
-    <form method="get" class="movie-filter-form">
+    <form method="get" class="movie-filter-form" role="form" aria-label="Фильтры">
         <div class="filter-row">
             <SearchFilter :search="store.currentParams.search ?? ''" placeholder="Логин пользователя..." />
             <OrderingFilter :currentFilter="store.currentParams.sort ?? ''" :items="store.filter.sort" />
@@ -131,7 +131,7 @@ table {
 .movie-number {
     font-size: 24px;
     font-weight: 300;
-    color: #999;
+    color: #000000;
     min-width: 40px;
     text-align: center;
     position: absolute;

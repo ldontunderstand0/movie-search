@@ -29,7 +29,7 @@ async function loadMovie() {
 <template>
 <div v-if="store.loading">Загрузка...</div>
 <div v-else-if="store.error" class="error">{{ store.error }}</div>
-<div v-else-if="store.items" class="movie-detail-container">
+<div v-else-if="store.items" class="movie-detail-container" id="movie-list-container">
 
 
     <div class="movie-header-section">
@@ -59,7 +59,7 @@ async function loadMovie() {
             </div> -->
 
             <div class="info-left-column">
-            <section class="info-section">
+            <section class="info-section" role="region" aria-label="Информация о личности">
                 <h3 class="section-title">О личности</h3>
                 <div class="info-table">
                     <div class="info-row">
@@ -93,7 +93,7 @@ async function loadMovie() {
     </div>
 
     <!-- Описание фильма -->
-    <section class="description-section">
+    <section class="description-section" role="region" aria-label="Биография">
         <h3 class="section-title">Биография</h3>
         <div v-if="store.items.description" class="movie-description">
             {{ store.items.description }}

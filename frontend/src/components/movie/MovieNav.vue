@@ -43,8 +43,8 @@ defineProps({
 
 .tab-link a {
     text-decoration: none;
-    color: #5e5e5e;
-    font-size: large;
+    color: #000000;
+    font-size: 16px;
 }
 
 .tab-link {
@@ -68,7 +68,7 @@ defineProps({
     
   }
   .tab-link a{
-    font-size: 14px;
+    font-size: 16px;
   }
   .tabs ul {
 gap: 0;

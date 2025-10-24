@@ -17,8 +17,8 @@ const destroy = async (id, api) => {
 .destroy {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 14px;
-  background-color: #fe5050;
-  color: #ffffff;
+  background-color: #ffacac;
+  color: #000000;
   border-radius: 4px;
   padding: 1% 2%;
   font-weight: bold;

@@ -23,15 +23,13 @@ watch(
 </script>
 
 <template>
-<div v-if="store.loading">Загрузка...</div>
-<div v-else-if="store.error" class="error">{{ store.error }}</div>
-<div v-else class="movie-list-container">
+<div class="movie-list-container" id="movie-list-container">
 
     <MovieNav v-if="store.currentParams.movie && store.currentParams.name === 'актер'" :movie_id="store.currentParams.movie" active="actors"/>
     <MovieNav v-else-if="store.currentParams.movie && store.currentParams.name === 'режиссер'" :movie_id="store.currentParams.movie" active="directors"/>
 
     <div v-if="!store.currentParams.movie">
-        <form  method="get" class="movie-filter-form">
+        <form  method="get" class="movie-filter-form" role="form" aria-label="Фильтры">
         <div class="filter-row">
 
             <SearchFilter :search="store.currentParams.search ?? ''" placeholder="Название фильма..." />
@@ -130,7 +128,7 @@ watch(
 .movie-number {
     font-size: 24px;
     font-weight: 300;
-    color: #999;
+    color: #000000;
     min-width: 40px;
     text-align: center;
     position: absolute;

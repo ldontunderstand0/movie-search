@@ -23,9 +23,9 @@ watch(
 </script>
 
 <template>
-  <div class="movie-list-container">
+  <div class="movie-list-container" id="movie-list-container">
 
-    <form method="get" class="movie-filter-form">
+    <form method="get" class="movie-filter-form" role="form" aria-label="Фильтры">
         <div class="filter-row">
 
             <SearchFilter :search="store.currentParams.search ?? ''" placeholder="Название жанра..." />
@@ -102,7 +102,7 @@ watch(
 
 .total-count {
     font-weight: 600;
-    color: #ff8a00;
+    color: #4d2900;
 }
 
 /* Сообщение об отсутствии результатов */

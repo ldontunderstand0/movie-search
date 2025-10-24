@@ -79,11 +79,11 @@ defineProps({
 
 .filter-radio-text {
     font-size: 14px;
-    color: #666;
+    color: #383838;
 }
 
 .filter-radio:checked + .filter-radio-text {
-    color: #ff8a00;
+    color: #7d4300;
     font-weight: 500;
 }
 </style>

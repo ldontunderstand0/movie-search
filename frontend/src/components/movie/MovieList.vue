@@ -26,11 +26,10 @@ watch(
 </script>
 
 <template>
-<div v-if="store.loading">Загрузка...</div>
-<div v-else-if="store.error" class="error">{{ store.error }}</div>
-<div v-else class="movie-list-container">
 
-    <form method="get" class="movie-filter-form">
+<div class="movie-list-container" id="movie-list-container">
+
+    <form method="get" class="movie-filter-form" role="form" aria-label="Фильтры">
         <div class="filter-row">
 
             <SearchFilter :search="store.currentParams.search ?? ''" placeholder="Название фильма..." />
@@ -151,7 +150,7 @@ watch(
 .movie-number {
     font-size: 24px;
     font-weight: 300;
-    color: #999;
+    color: #000000;
     min-width: 40px;
     text-align: center;
     position: absolute;
@@ -223,12 +222,12 @@ watch(
 
 .movie-year {
     font-size: 14px;
-    color: #666;
+    color: #2f2f2f;
 }
 
 .movie-rate {
     font-size: 14px;
-    color: #ff8a00;
+    color: #703c00;
     font-weight: 500;
 }
 .pagination-info {
@@ -248,7 +247,7 @@ watch(
 
 .total-count {
     font-weight: 600;
-    color: #ff8a00;
+    color: #824500;
 }
 
 /* Сообщение об отсутствии результатов */
@@ -327,7 +326,6 @@ watch(
     font-size: 18px;
     min-width: 30px;
     text-align: left;
-    color: #aaa;
   }
 
   .movie-poster {

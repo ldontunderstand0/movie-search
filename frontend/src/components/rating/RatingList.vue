@@ -67,9 +67,7 @@ watch(
 </script>
 
 <template>
-<div v-if="store.loading">Загрузка...</div>
-<div v-else-if="store.error" class="error">{{ store.error }}</div>
-<div v-else-if="store.items" class="movie-list-container">
+<div class="movie-list-container" id="movie-list-container">
 
     <MovieNav v-if="store.currentParams.movie" :movie_id="store.currentParams.movie" active="rating"/>
 
@@ -100,7 +98,7 @@ watch(
     </div>
     
     <h1 v-if="store.currentParams.movie" class="page-title">Оценки других пользователей</h1>
-    <form method="get" class="movie-filter-form">
+    <form method="get" class="movie-filter-form" role="form" aria-label="Фильтры">
         <div class="filter-row">
 
             <RadioFilter label="Оценки" name="rate" emptyLabel="Все" :currentFilter="store.currentParams.rate ?? ''" :items="store.filter.rates"/>
@@ -262,7 +260,7 @@ watch(
 }
 .avatar-icon {
     font-size: 16px;
-    color: #666;
+    color: #000000;
 }
 .user-info {
     display: flex;
@@ -279,7 +277,7 @@ watch(
 
 .review-date {
     font-size: 12px;
-    color: #666;
+    color: #2e2e2e;
 }
 .review-content {
     display: flex;
@@ -360,7 +358,7 @@ watch(
 
 .total-count {
     font-weight: 600;
-    color: #ff8a00;
+    color: #653600;
 }
 
 /* Сообщение об отсутствии результатов */

@@ -37,7 +37,7 @@ onMounted(async () => {
 
 </script>
 <template>
-<div class="movie-list-container">
+<div class="movie-list-container" id="movie-list-container">
     <h1 class="main">Главная</h1>
     <div class="top-movies">
         <router-link class="link" :to="{ name: 'movie', query: {sort: '-rate'} }">
@@ -230,7 +230,7 @@ onMounted(async () => {
   width: 170px;
   height: 240px;
   background-color: #222;
-  color: #888;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -241,7 +241,7 @@ onMounted(async () => {
   position: absolute;
   top: 8px;
   right: 8px;
-  background-color: rgba(255, 165, 0, 0.9);
+  background-color: rgba(60, 19, 0, 0.9);
   color: #fff;
   font-weight: bold;
   font-size: 0.9rem;
